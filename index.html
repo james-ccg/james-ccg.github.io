@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="description" content="James (xdjames) - frontend & full-stack developer. React, Vite, TypeScript. Browse my projects and get in touch." />
+	<meta name="theme-color" content="#0f1115" />
+	<title>James (xdjames)</title>
+	<link rel="stylesheet" href="./assets/style.css" />
+	<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f1115'/%3E%3Ctext x='32' y='47' font-family='Arial, sans-serif' font-weight='700' font-size='40' fill='%236dcff6' text-anchor='middle'%3EJ%3C/text%3E%3C/svg%3E" />
+
+	<meta property="og:type" content="website" />
+	<meta property="og:title" content="James (xdjames)" />
+	<meta property="og:description" content="Frontend & full-stack developer working in React, Vite and TypeScript. Browse my projects and get in touch." />
+	<meta property="og:image" content="https://james-ccg.github.io/assets/og-image.png" />
+	<meta property="og:url" content="https://james-ccg.github.io/" />
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content="James (xdjames)" />
+	<meta name="twitter:description" content="Frontend & full-stack developer working in React, Vite and TypeScript." />
+	<meta name="twitter:image" content="https://james-ccg.github.io/assets/og-image.png" />
+</head>
+<body>
+	<header>
+		<nav class="nav wrap">
+			<a class="brand" href="#top">james<span>-ccg</span></a>
+			<button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">&#9776;</button>
+			<div class="nav-links" id="navLinks">
+				<a href="#about">About</a>
+				<a href="#projects">My Projects</a>
+				<a href="./cropper/">Cropper</a>
+				<a href="./backgrounds/">Backgrounds</a>
+				<a href="#contact">Contact</a>
+			</div>
+		</nav>
+	</header>
+
+	<main>
+		<section class="hero" id="top">
+			<div class="wrap">
+				<span class="eyebrow">Hey, I'm James</span>
+				<h1>Building things for the web - <br />sometimes just to see if I can.</h1>
+				<p>
+					Frontend &amp; full-stack developer working mostly in React, Vite and TypeScript.
+					I like taking small, annoying, everyday problems and turning them into little
+					browser-based tools - most of which end up here.
+				</p>
+				<div class="cta-row">
+					<a class="btn btn-primary" href="#projects">See my projects</a>
+					<a class="btn btn-ghost" href="https://github.com/james-ccg" target="_blank" rel="noopener">GitHub</a>
+				</div>
+			</div>
+		</section>
+
+		<section id="about">
+			<div class="wrap">
+				<h2>About</h2>
+				<p class="section-lede">
+					I'm currently building modern web apps with React, Vite and TypeScript, learning my
+					way through Node.js, auth flows and scalable project structure, and generally
+					breaking things just to understand how to fix them better. Outside of code I stream
+					and make gaming content, and I'm always up for collaborating on frontend or
+					full-stack projects.
+				</p>
+				<div class="stack-row">
+					<span class="chip">JavaScript</span>
+					<span class="chip">TypeScript</span>
+					<span class="chip">React</span>
+					<span class="chip">Node.js</span>
+					<span class="chip">Vite</span>
+					<span class="chip">Webpack</span>
+					<span class="chip">HTML5</span>
+					<span class="chip">CSS3</span>
+					<span class="chip">Python</span>
+					<span class="chip">PHP</span>
+					<span class="chip">C++</span>
+					<span class="chip">Docker</span>
+					<span class="chip">Git</span>
+				</div>
+			</div>
+		</section>
+
+		<section id="projects">
+			<div class="wrap">
+				<h2>My Projects</h2>
+				<p class="section-lede">
+					A few browser-based tools I've built and actually keep using.
+				</p>
+				<div class="project-grid">
+					<article class="card featured">
+						<div class="card-tag">Latest</div>
+						<h3>Steam Artwork &amp; Workshop Cropper</h3>
+						<p>
+							Crops and exports Steam artwork/workshop showcase images - including animated
+							GIFs - to Steam's exact pixel dimensions, entirely in the browser. Oversized
+							exports are automatically compressed to fit Steam's 5MB upload limit.
+						</p>
+						<div class="card-links">
+							<a href="./cropper/" target="_blank" rel="noopener">Open tool</a>
+							<span class="sep">&middot;</span>
+							<a href="./backgrounds/">Browse backgrounds</a>
+							<span class="sep">&middot;</span>
+							<a href="https://github.com/james-ccg/steam-artwork-cropper" target="_blank" rel="noopener">GitHub</a>
+						</div>
+					</article>
+
+					<article class="card">
+						<div class="card-tag">Utility</div>
+						<h3>Excel to PDF Converter</h3>
+						<p>
+							Client-side converter for FINKI exam schedules - turns an Excel sheet into a
+							formatted PDF right in the browser, no upload or server round-trip required.
+						</p>
+						<div class="card-links">
+							<a href="./exam-excel-to-pdf/" target="_blank" rel="noopener">Open tool</a>
+						</div>
+					</article>
+
+					<article class="card">
+						<div class="card-tag">Utility</div>
+						<h3>Discord Channel Renamer</h3>
+						<p>
+							A small utility for bulk-renaming Discord channels - paste the exported JSON,
+							generate the renamed set, done.
+						</p>
+						<div class="card-links">
+							<a href="./discord-stuff/" target="_blank" rel="noopener">Open tool</a>
+						</div>
+					</article>
+				</div>
+			</div>
+		</section>
+
+		<section id="contact">
+			<div class="wrap">
+				<h2>Contact &amp; Socials</h2>
+				<p class="section-lede">Find me elsewhere on the internet.</p>
+				<div class="social-grid">
+					<a class="social-link" href="mailto:7ahadbek@gmail.com">Email <span class="arrow">&rarr;</span></a>
+					<a class="social-link" href="https://github.com/james-ccg" target="_blank" rel="noopener">GitHub <span class="arrow">&rarr;</span></a>
+					<a class="social-link" href="https://discord.gg/xdjames" target="_blank" rel="noopener">Discord <span class="arrow">&rarr;</span></a>
+					<a class="social-link" href="https://linkedin.com/in/james-ccg" target="_blank" rel="noopener">LinkedIn <span class="arrow">&rarr;</span></a>
+					<a class="social-link" href="https://twitch.tv/james_ccg" target="_blank" rel="noopener">Twitch <span class="arrow">&rarr;</span></a>
+					<a class="social-link" href="https://youtube.com/@james-ccg" target="_blank" rel="noopener">YouTube <span class="arrow">&rarr;</span></a>
+					<a class="social-link" href="https://bsky.app/profile/james-ccg.bsky.social" target="_blank" rel="noopener">Bluesky <span class="arrow">&rarr;</span></a>
+					<a class="social-link" href="https://behance.net/james_ccg" target="_blank" rel="noopener">Behance <span class="arrow">&rarr;</span></a>
+					<a class="social-link" href="https://codepen.io/james_ccg" target="_blank" rel="noopener">Codepen <span class="arrow">&rarr;</span></a>
+					<a class="social-link" href="https://stackoverflow.com/users/32509072" target="_blank" rel="noopener">Stack Overflow <span class="arrow">&rarr;</span></a>
+					<a class="social-link" href="https://reddit.com/user/james-ccg" target="_blank" rel="noopener">Reddit <span class="arrow">&rarr;</span></a>
+					<a class="social-link" href="https://instagram.com/james.ccg" target="_blank" rel="noopener">Instagram <span class="arrow">&rarr;</span></a>
+					<a class="social-link" href="https://tiktok.com/@james_ccg" target="_blank" rel="noopener">TikTok <span class="arrow">&rarr;</span></a>
+					<a class="social-link" href="https://facebook.com/ghost.ccg" target="_blank" rel="noopener">Facebook <span class="arrow">&rarr;</span></a>
+					<a class="social-link" href="https://pinterest.com/james_ccg" target="_blank" rel="noopener">Pinterest <span class="arrow">&rarr;</span></a>
+					<a class="social-link" href="https://steamcommunity.com/id/James_ccg" target="_blank" rel="noopener">Steam <span class="arrow">&rarr;</span></a>
+				</div>
+				<div class="support-row">
+					<span>Support:</span>
+					<a href="https://buymeacoffee.com/james_ccg" target="_blank" rel="noopener">Buy Me a Coffee</a>
+					<a href="https://patreon.com/xdjames" target="_blank" rel="noopener">Patreon</a>
+					<a href="https://ko-fi.com/xdjames" target="_blank" rel="noopener">Ko-fi</a>
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<footer class="wrap">
+		<span>&copy; <span id="year"></span> James (xdjames)</span>
+		<a href="https://github.com/james-ccg" target="_blank" rel="noopener">github.com/james-ccg</a>
+	</footer>
+
+	<script>
+		document.getElementById('year').textContent = new Date().getFullYear();
+
+		var navToggle = document.getElementById('navToggle');
+		var navLinks = document.getElementById('navLinks');
+		navToggle.addEventListener('click', function () {
+			var isOpen = navLinks.classList.toggle('open');
+			navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+		});
+		navLinks.querySelectorAll('a').forEach(function (link) {
+			link.addEventListener('click', function () {
+				navLinks.classList.remove('open');
+				navToggle.setAttribute('aria-expanded', 'false');
+			});
+		});
+	</script>
+</body>
+</html>

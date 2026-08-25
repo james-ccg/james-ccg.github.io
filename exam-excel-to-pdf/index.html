@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Excel to PDF converter</title>
+    <style>
+      #errorBlock {
+        color: red;
+        border: 1px solid red;
+        border-radius: 2px;
+        padding: 10px 10px;
+        width: fit-content;
+      }
+      #disableColors {
+        margin-bottom: 30px;
+      }
+    </style>
+  </head>
+  <body>
+    <p>Client-side script for converting FINKI's exam schedules from Excel to PDF format</p>
+    <input type="checkbox" id="disableColors" />
+    <label for="disableColors">Disable years colors</label><br />
+    <input type="file" id="inputFile" />
+    <p>Status: <span id="status">Idle</span></p>
+    <div id="errorBlock" style="display: none"></div>
+    <h3>How to use this</h3>
+    <ol>
+      <li>
+        <img src="./static/tutorial.jpg" alt="" style="width: 400px" />
+      </li>
+      <li>Click on "Choose file" and select the Excel file</li>
+      <li>You should get a PDF file in a few seconds</li>
+    </ol>
+    <h3>Possible issues:</h3>
+    <ul>
+      <li>If it fails to read the file, convert it to older version ".xls" and try again</li>
+      <li>If it fails again, something new broke and pray the creator fixes it</li>
+    </ul>
+    <h3>
+      <a href="https://github.com/james-ccg/finki-exam-excel-to-pdf" target="_blank"> GitHub Repo </a>
+    </h3>
+    <p style="color: #666">by <a href="https://github.com/james-ccg" target="_blank">xdjames</a></p>
+    <script src="./static/bundle.js"></script>
+  </body>
+</html>
