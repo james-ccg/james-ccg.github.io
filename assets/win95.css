@@ -1,7 +1,109 @@
 /* =====================================================================
    Desktop shell for the retro pages. Sits on top of 98.css, which styles
    the widgets but knows nothing about a desktop, a taskbar or layout.
+
+   98.css also restyles body, h1-h4, button, label and a - globally, with no
+   scoping - and it loads after the site stylesheet, so it repainted the
+   header, the theme switcher and the footer and made this page look like a
+   different site. This file loads last and puts the chrome back; everything
+   inside .desktop is left to 98.css, which is the only place it should reach.
    ===================================================================== */
+
+body {
+	margin: 0;
+	color: var(--text);
+	font-family: var(--font-body);
+	font-size: 15px;
+}
+
+a {
+	color: var(--link);
+}
+
+header.site a,
+footer.site a {
+	color: var(--link);
+}
+
+header.site .brand {
+	color: var(--text);
+	font-family: var(--font-pixel);
+	font-size: 16px;
+}
+
+header.site .nav-links a {
+	color: var(--text-dim);
+	font-family: var(--font-body);
+	font-size: 13.5px;
+}
+
+header.site .nav-links a.current {
+	color: var(--accent);
+}
+
+/* The theme switcher is the same control it is on every other page. 98.css
+   gives every bare button a silver Win98 face and a 75px minimum width, which
+   turned four small pixel labels into four chunky grey slabs. */
+.theme-switch button,
+.nav-toggle {
+	min-width: 0;
+	min-height: 0;
+	border: 0;
+	box-shadow: none;
+	text-shadow: none;
+	-webkit-font-smoothing: antialiased;
+}
+
+.theme-switch button {
+	font-family: var(--font-pixel);
+	font-size: 9px;
+	letter-spacing: 0.04em;
+	background: transparent;
+	color: var(--text-faint);
+	padding: 7px 8px;
+	line-height: 1;
+}
+
+.theme-switch button:hover {
+	color: var(--text);
+	background: var(--panel);
+}
+
+.theme-switch button[aria-pressed='true'] {
+	background: var(--accent);
+	color: var(--accent-ink);
+}
+
+.nav-toggle {
+	background: var(--panel);
+	border: var(--bord) solid var(--border);
+	color: var(--text);
+	font-size: 16px;
+	padding: 5px 11px;
+}
+
+.sec-head h2,
+.sec-lede,
+.foot-grid {
+	font-size: revert;
+}
+
+.sec-head h2 {
+	font-family: var(--font-pixel);
+	font-size: 17px;
+}
+
+.sec-lede {
+	font-family: var(--font-body);
+	font-size: 15px;
+	color: var(--text-dim);
+}
+
+.foot-grid {
+	font-family: var(--font-mono);
+	font-size: 12px;
+	color: var(--text-faint);
+}
 
 .desktop {
 	position: relative;
@@ -12,8 +114,10 @@
 	background-size: 4px 4px;
 	border: 2px solid var(--border);
 	border-radius: var(--radius);
-	padding: 16px;
-	margin-bottom: 12px;
+	padding: 12px;
+	margin-bottom: 0;
+	border-bottom: 0;
+	border-radius: var(--radius) var(--radius) 0 0;
 	overflow: hidden;
 }
 
@@ -33,7 +137,7 @@
    a cascade, which fits by overlapping - and buries every window under the
    last one. */
 .desktop .window-body {
-	max-height: 116px;
+	max-height: 210px;
 	overflow-y: auto;
 }
 
@@ -72,9 +176,11 @@ body.is-dragging {
 	gap: 4px;
 	background: silver;
 	border: 2px solid var(--border);
-	border-radius: var(--radius);
+	border-top: 0;
+	border-radius: 0 0 var(--radius) var(--radius);
 	padding: 3px 4px;
 	box-shadow: inset 0 1px #fff;
+	margin-bottom: 12px;
 }
 
 .taskbar .start {
@@ -198,7 +304,7 @@ body.is-dragging {
 	display: grid;
 	grid-template-columns: repeat(2, 1fr);
 	gap: 6px;
-	max-height: 120px;
+	max-height: 210px;
 	overflow-y: auto;
 	padding: 3px;
 	background: #fff;
@@ -214,7 +320,7 @@ body.is-dragging {
 
 .shrine-gallery img {
 	width: 100%;
-	height: 84px;
+	height: 96px;
 	object-fit: cover;
 	display: block;
 }
@@ -238,3 +344,53 @@ body.is-dragging {
 	cursor: pointer;
 	display: block;
 }
+
+/* ---- subaru.exe: Return by Death -------------------------------------- */
+.rbd {
+	display: flex;
+	flex-direction: column;
+	gap: 7px;
+}
+
+.rbd-status {
+	display: flex;
+	justify-content: space-between;
+	font-size: 11px;
+	color: #444;
+}
+
+.rbd-room {
+	margin: 0;
+	font-weight: 700;
+	text-align: center;
+	padding: 6px 0;
+	background: #fff;
+	box-shadow: inset -1px -1px #fff, inset 1px 1px grey, inset -2px -2px #dfdfdf, inset 2px 2px #0a0a0a;
+}
+
+.rbd-doors {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.rbd-doors button {
+	width: 100%;
+}
+
+/* A door that has already killed you stays marked - that memory is the only
+   thing carried across a death, and the whole point of the loop. */
+.rbd-doors button.rbd-dead {
+	color: #a00;
+	text-decoration: line-through;
+}
+
+.rbd-msg {
+	margin: 0;
+	font-size: 11px;
+	text-align: center;
+	min-height: 14px;
+}
+
+.rbd-msg.rbd-bad { color: #a00; }
+.rbd-msg.rbd-win { color: #060; font-weight: 700; }

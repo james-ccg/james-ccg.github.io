@@ -12,7 +12,7 @@
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" />
 	<link rel="stylesheet" href="../assets/style.css?v=3" />
 	<link rel="stylesheet" href="../assets/vendor/98.css" />
-	<link rel="stylesheet" href="../assets/win95.css?v=5" />
+	<link rel="stylesheet" href="../assets/win95.css?v=6" />
 	<link rel="icon" href="../assets/favicon.png" type="image/png" />
 	<link rel="alternate" type="application/rss+xml" title="james-ccg - updates" href="../updates.xml" />
 
@@ -119,7 +119,7 @@
 			</div>
 
 			<!-- ------------------------------------------------------------ -->
-			<div class="window" id="winRuns" style="width: 300px">
+			<div class="window" id="winRuns" style="width: 340px">
 				<div class="title-bar">
 					<div class="title-bar-text">save_states</div>
 					<div class="title-bar-controls">
@@ -128,7 +128,7 @@
 					</div>
 				</div>
 				<div class="window-body">
-					<div class="sunken-panel" style="height: 168px">
+					<div class="sunken-panel" style="height: 132px">
 						<table class="interactive">
 							<thead>
 								<tr><th>arc</th><th>verdict</th></tr>
@@ -176,7 +176,7 @@
 
 
 			<!-- ------------------------------------------------------------ -->
-			<div class="window" id="winFace" style="width: 250px">
+			<div class="window" id="winFace" style="width: 268px">
 				<div class="title-bar">
 					<div class="title-bar-text">subaru.exe</div>
 					<div class="title-bar-controls">
@@ -185,19 +185,12 @@
 					</div>
 				</div>
 				<div class="window-body">
-					<div class="face-stage">
-						<img id="faceFrame" src="../assets/shrine/faces/neutral.webp"
-						     alt="Subaru, cycling through expressions" width="180" height="180" />
-					</div>
-					<div class="field-row" style="justify-content: space-between; margin-top: 8px">
-						<button type="button" id="faceNext">next face</button>
-						<label><input type="checkbox" id="faceAuto" checked /> auto</label>
-					</div>
+					<div class="rbd" id="rbdGame"></div>
 				</div>
 			</div>
 
 			<!-- ------------------------------------------------------------ -->
-			<div class="window" id="winGallery" style="width: 430px">
+			<div class="window" id="winGallery" style="width: 400px">
 				<div class="title-bar">
 					<div class="title-bar-text">gallery</div>
 					<div class="title-bar-controls">
@@ -284,31 +277,8 @@
 	</footer>
 
 	<script src="../assets/app.js?v=2"></script>
-	<script src="../assets/win95.js?v=5"></script>
-	<script>
-		/* The expression sheet is not a grid - the faces sit at scattered
-		   positions - so each was cropped to its own frame rather than driven
-		   by background-position. */
-		(function () {
-			var FACES = ['neutral', 'smirk', 'worried', 'shock', 'wink', 'shout', 'yell'];
-			var img = document.getElementById('faceFrame');
-			var auto = document.getElementById('faceAuto');
-			var next = document.getElementById('faceNext');
-			if (!img) return;
-			var i = 0;
-			function step() {
-				i = (i + 1) % FACES.length;
-				img.src = '../assets/shrine/faces/' + FACES[i] + '.webp';
-			}
-			next.addEventListener('click', step);
-			img.addEventListener('click', step);
-			var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-			if (reduced && auto) auto.checked = false;
-			setInterval(function () {
-				if (auto && auto.checked) step();
-			}, 1400);
-		})();
-	</script>
-	<script src="../assets/mascot.js?v=9"></script>
+	<script src="../assets/win95.js?v=6"></script>
+	<script src="../assets/shrine-game.js"></script>
+	<script src="../assets/mascot.js?v=10"></script>
 </body>
 </html>

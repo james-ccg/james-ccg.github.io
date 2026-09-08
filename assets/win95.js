@@ -53,10 +53,9 @@
 	function layout(wins) {
 		var deskBox = desk.getBoundingClientRect();
 		var pad = 12;
-		// The screen is 16:9. Not "at least" - taking the max of the packed
-		// height and the ratio meant a tall pack simply won and the desktop
-		// came out 1.2:1. The box is fixed first and the windows are fitted
-		// into it.
+		// The screen is 16:9, derived from the measured width. Setting the
+		// ratio in CSS instead let the browser solve width from height, and a
+		// tall stack pushed the desktop wider than the viewport.
 		var targetH = Math.round((deskBox.width * 9) / 16);
 		desk.style.height = targetH + 'px';
 
@@ -65,51 +64,31 @@
 			return { w: b.width, h: b.height };
 		});
 
-		function pack(gap) {
-			var x = gap, y = gap, rowH = 0, out = [];
-			boxes.forEach(function (b) {
-				if (x > gap && x + b.w > deskBox.width - gap) {
-					x = gap;
-					y += rowH + gap;
-					rowH = 0;
-				}
-				out.push({ x: x, y: y });
-				x += b.w + gap;
-				rowH = Math.max(rowH, b.h);
-			});
-			return out;
-		}
-
-		function lowest(placed) {
-			return placed.reduce(function (m, p, i) {
-				return Math.max(m, p.y + boxes[i].h);
-			}, 0);
-		}
-
-		// Shelf-pack, tightening the gap before giving up on it.
-		var placed = null;
-		for (var gap = pad; gap >= 4; gap -= 4) {
-			var attempt = pack(gap);
-			if (lowest(attempt) <= targetH) {
-				placed = attempt;
-				break;
+		/* Windows arrive overlapping, the way a desktop you have actually been
+		   using looks. The step is 30px so every title bar below the top one
+		   stays visible and clickable - a cascade that hides them is just a
+		   pile. Columns wrap before the stack would run off the bottom. */
+		var step = 30;
+		var perCol = Math.max(1, Math.floor((targetH - pad * 2 - 90) / step) + 1);
+		var colW = 0;
+		var placed = [];
+		var colX = pad;
+		boxes.forEach(function (b, i) {
+			var row = i % perCol;
+			if (row === 0 && i > 0) {
+				colX += colW + step;
+				colW = 0;
 			}
-			placed = attempt;
-		}
-
-		// Still too tall: cascade instead. Overlapping windows always fit,
-		// and a desktop is allowed to look like one.
-		if (lowest(placed) > targetH) {
-			placed = boxes.map(function (b, i) {
-				var perCol = Math.max(1, Math.floor((targetH - pad) / 34));
-				var col = Math.floor(i / perCol);
-				var row = i % perCol;
-				return {
-					x: Math.min(deskBox.width - 60, pad + col * 150 + row * 22),
-					y: Math.min(targetH - 30, pad + row * 34)
-				};
+			colW = Math.max(colW, b.w * 0.35);
+			var x = colX + row * step;
+			var y = pad + row * step;
+			// Never let a window start so far right or low that its title bar
+			// is off the screen.
+			placed.push({
+				x: Math.max(0, Math.min(x, deskBox.width - 90)),
+				y: Math.max(0, Math.min(y, targetH - 28))
 			});
-		}
+		});
 
 		wins.forEach(function (w, i) {
 			w.style.width = boxes[i].w + 'px';

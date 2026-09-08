@@ -94,10 +94,16 @@ def largest_blob(im):
     return out.crop(bbox) if bbox else out
 
 
-def fit_square(im, size):
-    """Scale to fit inside size x size, centred, on transparency."""
+def fit_square(im, size, pad=0):
+    """Scale to fit inside size x size, centred, on transparency.
+
+    `pad` leaves a margin. Without it the head is scaled until its longest
+    side touches both frame edges, which clipped his ear tips at the top and
+    his chin at the bottom - and left no room for the face-centring shift to
+    move into."""
     w, h = im.size
-    scale = min(size / w, size / h)
+    inner = max(1, size - pad * 2)
+    scale = min(inner / w, inner / h)
     new = im.resize((max(1, round(w * scale)), max(1, round(h * scale))), Image.LANCZOS)
     out = Image.new('RGBA', (size, size), (0, 0, 0, 0))
     out.paste(new, ((size - new.width) // 2, (size - new.height) // 2), new)
@@ -114,7 +120,7 @@ def pixelate(im, size, colors):
     are a small saturated region that quantisation flattens toward the fur -
     finding them afterwards silently fails, which is what made blink and wink
     come out identical to idle."""
-    clean = fit_square(im, size)
+    clean = fit_square(im, size, pad=7)
     alpha = clean.getchannel('A').point(lambda a: 255 if a > 128 else 0)
     rgb = clean.convert('RGB').quantize(colors=colors, method=Image.MEDIANCUT).convert('RGB')
     out = rgb.convert('RGBA')
