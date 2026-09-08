@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regenerates the cursor in assets/mascot.js - a pointing hand, tinted.
+"""Regenerates the cursor in assets/mascot.js - an arrow, tinted.
 
 Smooth vector, not pixel art. Three pixel-grid attempts all came out looking
 like a blocky sticker: a 16-square grid scaled to ~20 CSS pixels lands

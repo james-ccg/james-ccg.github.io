@@ -132,14 +132,10 @@ header.site .nav-links a.current {
 	display: none;
 }
 
-/* Compact bodies so a shelf pack fits inside the 16:9 screen. Without this
-   the rows totalled more than the screen height and the manager fell back to
-   a cascade, which fits by overlapping - and buries every window under the
-   last one. */
-.desktop .window-body {
-	max-height: 118px;
-	overflow-y: auto;
-}
+/* No height cap. Capping the body is what put a scrollbar in four of the
+   seven windows; a window that hides its own content is worse than a busy
+   desktop. The content is kept short instead, so each window fits on its
+   own. */
 
 .window-body p {
 	margin: 0 0 10px;
@@ -320,7 +316,7 @@ body.is-dragging {
 
 .shrine-gallery img {
 	width: 100%;
-	height: 96px;
+	height: 74px;
 	object-fit: cover;
 	display: block;
 }
