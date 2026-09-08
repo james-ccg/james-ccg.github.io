@@ -123,26 +123,42 @@
 			});
 	}
 
-	/* ---------- hit counter ---------------------------------------- */
-	/* Counts this browser's own visits, held in localStorage. It is honest
-	   about what it measures and costs no third-party request; swap the
-	   block for a hosted counter's <img> if a global number is wanted. */
+	/* ---------- hit counter ----------------------------------------
+	   Counts once per device per day. Refreshing does nothing; coming back
+	   tomorrow adds one. The window is checked against a stored timestamp
+	   rather than a date string so it is a real 24 hours, not "any time
+	   after midnight".
+
+	   Note on what this can and cannot be: these pages are static files on
+	   GitHub Pages, so there is no server and no request log - nothing here
+	   can see an IP address. A device is the finest identity available to a
+	   page on its own, which is what localStorage gives us. A genuinely
+	   global, IP-deduplicated total needs something server-side (a hosted
+	   counter's <img>, or a small serverless endpoint) and would mean every
+	   visitor's address reaching a third party. */
 	var counter = document.getElementById('hitCounter');
 	if (counter) {
-		var n = 1;
+		var DAY = 86400000;
+		var visits = 0;
 		try {
-			n = (parseInt(localStorage.getItem('jccg:visits'), 10) || 0) + 1;
-			localStorage.setItem('jccg:visits', String(n));
+			visits = parseInt(localStorage.getItem('jccg:visits'), 10) || 0;
+			var last = parseInt(localStorage.getItem('jccg:lastVisit'), 10) || 0;
+			if (Date.now() - last >= DAY) {
+				visits += 1;
+				localStorage.setItem('jccg:visits', String(visits));
+				localStorage.setItem('jccg:lastVisit', String(Date.now()));
+			}
 		} catch (e) {
-			/* private mode - every visit reads as the first */
+			visits = 1; /* private mode - every visit reads as the first */
 		}
-		var digits = String(n).padStart(6, '0').split('');
+		var digits = String(visits).padStart(6, '0').split('');
 		counter.innerHTML = '';
 		for (var d = 0; d < digits.length; d++) {
 			var cell = document.createElement('span');
 			cell.textContent = digits[d];
 			counter.appendChild(cell);
 		}
+		counter.title = 'Visits from this device, counted once a day';
 	}
 
 	/* ---------- year ----------------------------------------------- */

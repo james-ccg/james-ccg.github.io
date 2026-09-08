@@ -1,33 +1,32 @@
 #!/usr/bin/env python3
 """Regenerates assets/badge.svg and assets/favicon.svg.
 
-The marks are pixel art, so they are laid out arithmetically rather than by
-hand - hand-placing the rects is what pushed the first wordmark past 88px and
-left the J reading as two disconnected blocks.
+The marks are pixel art laid out arithmetically rather than by hand - placing
+rects by eye is what produced a wordmark that ran past 88px and a J that read
+as two floating blocks.
+
+The face is 4x7. An earlier 3x5 was too coarse to look like anything but
+programmer art: at 88x31 the letters have room for real proportions, and
+that difference is most of what separates a good web button from a bad one.
 
     python tools/make-marks.py
 """
 import io
 import os
 
-# 3x5 pixel capitals. The J uses a full bottom bar and a left riser: a
-# diagonal-only hook (X.X over .X.) is technically the classic form but reads
-# as two floating blocks once the pixels are big.
-FONT = {
-    'J': ["..X", "..X", "..X", "X.X", "XXX"],
-    'A': [".X.", "X.X", "XXX", "X.X", "X.X"],
-    'M': ["X.X", "XXX", "X.X", "X.X", "X.X"],
-    'E': ["XXX", "X..", "XXX", "X..", "XXX"],
-    'S': [".XX", "X..", ".X.", "..X", "XX."],
-    'C': [".XX", "X..", "X..", "X..", ".XX"],
-    'G': [".XX", "X..", "X.X", "X.X", ".XX"],
-    'X': ["X.X", "X.X", ".X.", "X.X", "X.X"],
-    'D': ["XX.", "X.X", "X.X", "X.X", "XX."],
-    '-': ["...", "...", "XXX", "...", "..."],
-}
-GLYPH_W, GLYPH_H, TRACK = 3, 5, 1
+GLYPH_W, GLYPH_H, TRACK = 4, 7, 1
 
-BG, AMBER, INK, TEXT = '#14151c', '#ffb454', '#14151c', '#dfe1ea'
+FONT = {
+    'J': ["...X", "...X", "...X", "...X", "X..X", "X..X", ".XX."],
+    'A': [".XX.", "X..X", "X..X", "XXXX", "X..X", "X..X", "X..X"],
+    'M': ["X..X", "XXXX", "XXXX", "X..X", "X..X", "X..X", "X..X"],
+    'E': ["XXXX", "X...", "X...", "XXX.", "X...", "X...", "XXXX"],
+    'S': [".XXX", "X...", "X...", ".XX.", "...X", "...X", "XXX."],
+}
+
+BG_TOP, BG_BOT = '#1b1d28', '#101119'
+AMBER_TOP, AMBER_BOT = '#ffc270', '#f0a23d'
+INK, TEXT = '#14151c', '#f2f4fa'
 
 
 def word(text, x, y, scale, fill):
@@ -47,49 +46,56 @@ def word(text, x, y, scale, fill):
                     )
                     run = 0
         cx += (GLYPH_W + TRACK) * scale
-    width = cx - x - TRACK * scale
-    return f'<g fill="{fill}">' + ''.join(rects) + '</g>', width
+    return f'<g fill="{fill}">' + ''.join(rects) + '</g>', cx - x - TRACK * scale
 
 
-def scanlines(x, w, y0, y1, step, h, fill, opacity):
-    bars = ''.join(
-        f'<rect x="{x}" y="{y}" width="{w}" height="{h}"/>'
-        for y in range(y0, y1, step)
-    )
-    return f'<g fill="{fill}" fill-opacity="{opacity}">{bars}</g>'
+DEFS = f'''<defs>
+		<linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+			<stop offset="0" stop-color="{BG_TOP}"/><stop offset="1" stop-color="{BG_BOT}"/>
+		</linearGradient>
+		<linearGradient id="am" x1="0" y1="0" x2="0" y2="1">
+			<stop offset="0" stop-color="{AMBER_TOP}"/><stop offset="1" stop-color="{AMBER_BOT}"/>
+		</linearGradient>
+	</defs>'''
 
 
 def build_badge():
-    # JAMES on one line. Five glyphs is short enough to go up to scale 3 -
-    # 57px drawn - which is why the mark block trims to 24px; the assert keeps
-    # that honest if the name or the scale ever changes.
-    mark_w, text_x, scale = 24, 27, 3
-    mark, _ = word('J', 6, 8, 3, INK)
-    name, w_name = word('JAMES', text_x, 8, scale, TEXT)
-    assert text_x + w_name <= 86, f'wordmark overflows 88px: {text_x + w_name}'
+    """88x31 with a square 31x31 mark block, so the logo is a square."""
+    mark_w, scale = 31, 2
+    # Big J centred in the square block.
+    jw, jh = GLYPH_W * 4, GLYPH_H * 4
+    mark, _ = word('J', (mark_w - jw) // 2 + 2, (31 - jh) // 2, 4, INK)
+    # Wordmark centred in the remaining 57px.
+    probe, w = word('JAMES', 0, 0, scale, TEXT)
+    text_x = mark_w + (88 - mark_w - w) // 2
+    name, _ = word('JAMES', text_x, (31 - GLYPH_H * scale) // 2, scale, TEXT)
+    assert text_x + w <= 87, f'wordmark overflows 88px: {text_x + w}'
     return f'''<svg xmlns="http://www.w3.org/2000/svg" width="88" height="31" viewBox="0 0 88 31" shape-rendering="crispEdges" role="img" aria-label="James">
-	<rect width="88" height="31" fill="{BG}"/>
-	<rect x="0" y="0" width="{mark_w}" height="31" fill="{AMBER}"/>
+	{DEFS}
+	<rect width="88" height="31" fill="url(#bg)"/>
+	<rect x="0" y="0" width="{mark_w}" height="31" fill="url(#am)"/>
 	{mark}
-	{scanlines(0, mark_w, 1, 31, 4, 1, INK, 0.12)}
+	<rect x="{mark_w}" y="0" width="1" height="31" fill="{INK}" fill-opacity="0.55"/>
 	{name}
-	<rect x="0" y="0" width="88" height="1" fill="#fff" fill-opacity="0.2"/>
-	<rect x="0" y="0" width="1" height="31" fill="#fff" fill-opacity="0.12"/>
-	<rect x="0" y="30" width="88" height="1" fill="#000" fill-opacity="0.5"/>
-	<rect x="87" y="0" width="1" height="31" fill="#000" fill-opacity="0.5"/>
+	<rect x="0" y="0" width="88" height="1" fill="#fff" fill-opacity="0.22"/>
+	<rect x="0" y="0" width="1" height="31" fill="#fff" fill-opacity="0.13"/>
+	<rect x="0" y="30" width="88" height="1" fill="#000" fill-opacity="0.55"/>
+	<rect x="87" y="0" width="1" height="31" fill="#000" fill-opacity="0.55"/>
 </svg>
 '''
 
 
 def build_favicon():
-    """A tab icon has to be its own square mark - the 88x31 badge was being
+    """A tab icon needs its own square mark - the 88x31 badge was being
     squashed into a smear at 16px."""
-    mark, _ = word('J', 20, 14, 8, INK)
-    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" shape-rendering="crispEdges" role="img" aria-label="james-ccg">
-	<rect width="64" height="64" rx="8" fill="{BG}"/>
-	<rect x="6" y="6" width="52" height="52" rx="4" fill="{AMBER}"/>
+    jw, jh = GLYPH_W * 6, GLYPH_H * 6
+    mark, _ = word('J', (64 - jw) // 2 + 3, (64 - jh) // 2, 6, INK)
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" shape-rendering="crispEdges" role="img" aria-label="James">
+	{DEFS}
+	<rect width="64" height="64" rx="10" fill="url(#bg)"/>
+	<rect x="5" y="5" width="54" height="54" rx="6" fill="url(#am)"/>
 	{mark}
-	{scanlines(6, 52, 8, 58, 6, 2, INK, 0.10)}
+	<rect x="5" y="5" width="54" height="2" rx="1" fill="#fff" fill-opacity="0.3"/>
 </svg>
 '''
 
