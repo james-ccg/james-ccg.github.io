@@ -1,23 +1,28 @@
 #!/usr/bin/env python3
 """Generates assets/mascot/*.svg - Puck, at 32x32.
 
-Original pixel art of Puck from Re:Zero (Kadokawa / White Fox). Drawn here
+Original pixel art of Puck from Re:Zero (Kadokawa / White Fox), drawn here
 rather than copied, since these pages are public.
 
-The first version of this file stacked ellipses and ran a procedural shading
-pass over them. That produces a creature, but not *this* creature - likeness
-lives in the face, and a disc with an auto-shader gives you a generic grey
-blob every time. So the art is hand-authored on a grid.
+Two earlier attempts failed for reasons worth recording:
 
-Only the left half is written out; the right half is mirrored from it. That
-guarantees a symmetric face for free and halves the work, and the handful of
-things that are genuinely asymmetric - his gold hoop, the tail, a raised paw -
-are added afterwards.
+1. Stacking ellipses and running an auto-shader over them. That reliably
+   produces a creature and just as reliably the wrong one - likeness lives in
+   the face, and a disc with a shading pass is a generic grey blob whatever
+   character it is meant to be.
+2. Authoring one half and mirroring it. Symmetric faces are cheap that way,
+   but *Puck's head is not symmetric*: his left ear stands up in a point while
+   his right ear folds over, and the gold hoop hangs from the folded one.
+   Mirroring flattened exactly the detail that identifies him, which is why
+   the earring read as something stuck on rather than worn.
 
-Puck's tells, and why each one is in here: light grey and white fur, large
-aqua eyes set high and wide, big pointed ears with pink inside, a small pink
-nose, a thick curling tail as long as his body, and the single gold hoop on
-his left ear. Miss the ears and the eyes and it reads as a mouse.
+So the full grid is hand-authored. Rows are padded on the right, so only the
+meaningful prefix has to be typed, and an assert catches anything too long.
+
+Working from reference, the tells that matter at this size: grey-lavender
+outer fur against a white face and chest, a white V marking on the forehead,
+large teal almond eyes with strong highlights, pink blush, a small pink nose,
+the asymmetric ears, and the single gold hoop.
 
     python tools/make_puck.py
 """
@@ -25,149 +30,107 @@ import io
 import os
 
 N = 32
-H = N // 2
 
-# Ramps: shadows lean blue, highlights lean warm.
 C = {
-    'o': '#232838',   # outline - blue-black, never pure black
-    'W': '#f7f9fd',   # fur highlight
-    'F': '#dbe2ee',   # fur base
-    'S': '#aab6c9',   # fur shadow
-    'D': '#8592a8',   # fur deep shadow
-    'P': '#f6a8bd',   # pink - inner ear and nose
-    'p': '#d4809a',   # pink shadow
-    'E': '#5fe0d6',   # eye - the aqua he is known for
-    'e': '#1d8f88',   # eye shadow
-    'H': '#ffffff',   # eye glint
-    'G': '#ffd166',   # earring gold
-    'g': '#d2a034',   # earring shadow
+    'o': '#3a3547',   # outline - soft dark violet, not black
+    'G': '#c9c6d4',   # outer fur, grey-lavender
+    'S': '#aaa5ba',   # fur shadow
+    'D': '#8b8799',   # fur deep shadow
+    'W': '#fbfaff',   # face, chest, muzzle
+    'w': '#e6e4ef',   # white in shadow
+    'P': '#f0c0c8',   # inner ear
+    'B': '#f5b0be',   # blush
+    'N': '#ef9fb0',   # nose
+    'E': '#5fc9d8',   # eye, teal
+    'e': '#2e8ba0',   # eye depth
+    'H': '#ffffff',   # eye highlight
+    'Y': '#e8c05a',   # earring gold
+    'y': '#bf9530',   # earring shadow
 }
 
-# Left half only, 16 columns wide. Column 15 is the centre line, so anything
-# touching it becomes 2px wide after mirroring.
-LEFT = [
-    "................",  # 0
-    "......o.........",  # 1   ear tip
-    ".....oPo........",  # 2
-    ".....oPPo.......",  # 3
-    "....oWPPo.......",  # 4
-    "....oWFPPo......",  # 5
-    "...oWFFPPo......",  # 6
-    "...oWFFFPo..oooo",  # 7   ear meets the crown of the head
-    "..oWFFFFFooWWWWW",  # 8
-    "..oWFFFFWWWWWWWW",  # 9
-    ".oWFFFWWWWWWWWWW",  # 10
-    ".oWFFWWWWWWWWWWW",  # 11
-    ".oWFWWWWWWWWWWWW",  # 12
-    ".oFWWoooooWWWWWW",  # 13  eyes start - big, set high and wide
-    ".oFWoEEEEEoWWWWW",  # 14
-    ".oFWoEHEEEoWWWWW",  # 15  glint top-left, matching the light
-    ".oFWoEEEEEoWWWWW",  # 16
-    ".oFWoEEEEeoWWWWW",  # 17
-    ".oFWWoooooWWWWPP",  # 18  nose
-    ".oSFWWWWWWWWWWPP",  # 19
-    "..oSFWWWWWWWWWWW",  # 20
-    "...oSFFWWWWWWWWW",  # 21
-    "....oSSFFFWWWWWW",  # 22
-    "......ooSSSFFFFF",  # 23
-    ".........oooSSSS",  # 24
-    "................",  # 25
-    "................",  # 26
-    "................",  # 27
-    "................",  # 28
-    "................",  # 29
-    "................",  # 30
-    "................",  # 31
+# Left ear points up; the right ear folds over and carries the hoop. The white
+# V on the forehead runs from between the ears down between the eyes.
+ART = [
+    ".......oo",                                      # 0
+    "......oGGo",                                     # 1
+    "......oGPGo",                                    # 2
+    ".....oGPPGo...........oooo",                     # 3
+    ".....oGPPGo........oooGGGGo",                    # 4
+    "....oGPPPGooooooooooGGGGGGo",                    # 5
+    "....oGPPGGGGGGGGGGGGGGPPGGo",                    # 6
+    "...oGGPGGGGGGWGGGGGGGGPPGGo",                    # 7
+    "...oGGGGGGGGWWWGGGGGGGGGGoYo",                   # 8
+    "..oGGGGGGGGWWWWWGGGGGGGGGoYYo",                  # 9
+    "..oGGGGGGGWWWWWWWGGGGGGGGGoYo",                  # 10
+    ".oGGGGGGGWWWWWWWWWGGGGGGGGo",                    # 11
+    ".oGGGGGGWWWWWWWWWWWGGGGGGGo",                    # 12
+    ".oGGGooooWWWWWWWWWooooGGGGo",                    # 13  eyes: narrow
+    ".oGGoHHEEoWWWWWWWoHHEEoGGGo",                    # 14  and tall, the
+    ".oGGoHEEEoWWWWWWWoHEEEoGGGo",                    # 15  way an almond
+    ".oGGoEEEEoWWWWWWWoEEEEoGGGo",                    # 16  eye reads - a
+    ".oGGoEEeeoWWWWWWWoEEeeoGGGo",                    # 17  wide block looks
+    ".oGGGooooWWWWNNWWWooooGGGGo",                    # 18  like goggles
+    ".oGBBGoWWWWWWNNWWWWoGBBGGo",                     # 19
+    "..oGGGWWWWWWWWWWWWWWWGGGo",                      # 20
+    "..oGGGWWWWWWWWWWWWWWWGGGo",                      # 21
+    "...oGGGWWWWWWWWWWWWWGGGo",                       # 22
+    "....oGGGGWWWWWWWWWGGGGo",                        # 23
+    "......oGGGGWWWWWWGGGGo",                         # 24
+    ".......ooGGGGGGGGGGoo",                          # 25
+    ".........oooooooooo",                            # 26
 ]
 
 
-def mirrored():
-    """Left half plus its reflection - a symmetric face, guaranteed."""
-    grid = []
-    for row in LEFT:
-        assert len(row) == H, f'row must be {H} wide, got {len(row)}'
-        grid.append(list(row + row[::-1]))
-    assert len(grid) == N
-    return grid
+def grid():
+    g = []
+    for row in ART:
+        assert len(row) <= N, f'row is {len(row)} wide, max {N}'
+        g.append(list(row.ljust(N, '.')))
+    while len(g) < N:
+        g.append(list('.' * N))
+    return g
 
 
-def put(grid, pts, ch):
+def put(g, pts, ch):
     for x, y in pts:
         if 0 <= x < N and 0 <= y < N:
-            grid[y][x] = ch
+            g[y][x] = ch
 
 
-def stroke(grid, pts, ch, r=1, only_empty=True):
-    """Round brush along a polyline. `only_empty` keeps the tail from carving
-    into the body it grows out of."""
-    for cx, cy in pts:
-        for dy in range(-r, r + 1):
-            for dx in range(-r, r + 1):
-                if dx * dx + dy * dy > r * r + 0.6:
-                    continue
-                x, y = cx + dx, cy + dy
-                if not (0 <= x < N and 0 <= y < N):
-                    continue
-                if only_empty and grid[y][x] != '.':
-                    continue
-                grid[y][x] = ch
-
-
-def filled(grid, x, y):
-    return 0 <= x < N and 0 <= y < N and grid[y][x] != '.'
-
-
-def outline(grid, ch='o'):
-    """1px dark edge outside the silhouette, 4-neighbour so it never bridges
-    a gap into a solid plate."""
-    edge = [
-        (x, y)
-        for y in range(N)
-        for x in range(N)
-        if grid[y][x] == '.'
-        and any(filled(grid, x + dx, y + dy) for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))
-    ]
-    for x, y in edge:
-        grid[y][x] = ch
-
-
-def close_eyes(grid):
-    """Blink and sleep: the eye block collapses to a lash line."""
+def close_eyes(g, side='both'):
+    """Shut the eyes to lash lines. Puck's eye blocks sit at rows 13-18."""
+    lo = 0 if side in ('both', 'left') else N // 2
+    hi = N if side in ('both', 'right') else N // 2
     for y in range(13, 19):
-        for x in range(N):
-            if grid[y][x] in 'EeH':
-                grid[y][x] = 'W'
-    for ex in (5, 21):
-        put(grid, [(ex + i, 15) for i in range(6)], 'o')
+        for x in range(lo, hi):
+            if g[y][x] in 'EeH':
+                g[y][x] = 'W'
+    lashes = []
+    if side in ('both', 'left'):
+        lashes += [(4 + i, 15) for i in range(7)]
+    if side in ('both', 'right'):
+        lashes += [(17 + i, 15) for i in range(7)]
+    put(g, lashes, 'o')
+
+
+def smile(g):
+    """A small w-shaped mouth under the nose. Drawn in rather than typed into
+    the grid so the muzzle stays a clean white field."""
+    put(g, [(12, 20), (15, 20), (13, 21), (14, 21)], 'o')
 
 
 def build(pose):
-    g = mirrored()
-
-    # No tail. This is a head, not a whole cat - the sprite is 32px and the
-    # face is what carries the likeness, so the body was cut. A tail growing
-    # out of nothing just read as a stray nub in the corner.
-
-    # His single clearest tell: one gold hoop, on his left ear (screen right).
-    put(g, [(25, 8), (26, 8), (26, 9), (25, 10)], 'G')
-    put(g, [(26, 10)], 'g')
-
-    if pose in ('blink', 'sleep'):
+    g = grid()
+    smile(g)
+    if pose == 'blink':
         close_eyes(g)
-    if pose == 'sleep':
-        put(g, [(14, 21), (15, 21), (16, 21), (17, 21)], 'S')
-
-    if pose == 'wave':
-        # A wink, not a raised paw. The head fills the sprite edge to edge, so
-        # there is nowhere outside the silhouette for an arm to go - and a paw
-        # drawn inside it just vanished.
-        for y in range(13, 19):
-            for x in range(0, N // 2):
-                if g[y][x] in 'EeH':
-                    g[y][x] = 'W'
-        put(g, [(5 + i, 15) for i in range(6)], 'o')
-
-    outline(g)
+    elif pose == 'sleep':
+        close_eyes(g)
+        put(g, [(13, 22), (14, 22), (15, 22), (16, 22), (17, 22)], 'w')
+    elif pose == 'wave':
+        # A wink. The head fills the sprite, so there is nowhere outside the
+        # silhouette to raise a paw, and a paw drawn inside it disappears.
+        close_eyes(g, side='left')
     return g
 
 
