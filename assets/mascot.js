@@ -21,7 +21,7 @@
 	var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 	function prefs() {
-		var d = { sprite: true, cursor: 'off', saver: true };
+		var d = { sprite: true, cursor: false, saver: true };
 		try {
 			return Object.assign(d, JSON.parse(localStorage.getItem(KEY) || '{}'));
 		} catch (e) {
@@ -200,39 +200,69 @@
 	/* Subaru's Invisible Providence - the Unseen Hand. Hotspot on the top
 	   claw tip, so what you click is what it points at. */
 	var CURSORS = {
-		arrow: 'url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2722%27%20height%3D%2722%27%20viewBox%3D%270%200%2024%2024%27%3E%3Cpath%20d%3D%27M3.5%202.2%20L3.5%2019.6%20L8.0%2015.4%20L10.9%2021.8%20L13.9%2020.4%20L11.1%2014.2%20L16.9%2014.0%20Z%27%20fill%3D%27%238b4fc9%27%20stroke%3D%27%23150a24%27%20stroke-width%3D%272.6%27%20stroke-linejoin%3D%27round%27%20paint-order%3D%27stroke%27%2F%3E%3Cpath%20d%3D%27M5.1%205.0%20L5.1%2015.6%27%20stroke%3D%27%23c79bf0%27%20stroke-width%3D%271.3%27%20stroke-linecap%3D%27round%27%20fill%3D%27none%27%2F%3E%3C%2Fsvg%3E") 3 2, auto',
-		hand: 'url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2722%27%20height%3D%2722%27%20viewBox%3D%270%200%2024%2024%27%3E%3Cg%20fill%3D%27%23150a24%27%3E%3Crect%20x%3D%276.70%27%20y%3D%270.60%27%20width%3D%277.10%27%20height%3D%2715.20%27%20rx%3D%273.55%27%2F%3E%3Crect%20x%3D%2711.00%27%20y%3D%276.60%27%20width%3D%276.70%27%20height%3D%279.70%27%20rx%3D%273.35%27%2F%3E%3Crect%20x%3D%2713.60%27%20y%3D%277.80%27%20width%3D%276.60%27%20height%3D%278.70%27%20rx%3D%273.30%27%2F%3E%3Crect%20x%3D%273.40%27%20y%3D%2711.40%27%20width%3D%276.50%27%20height%3D%278.80%27%20rx%3D%273.25%27%2F%3E%3Crect%20x%3D%274.80%27%20y%3D%2710.00%27%20width%3D%2715.20%27%20height%3D%2713.60%27%20rx%3D%275.20%27%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%27%238b4fc9%27%3E%3Crect%20x%3D%278.30%27%20y%3D%272.20%27%20width%3D%273.90%27%20height%3D%2712.00%27%20rx%3D%271.95%27%2F%3E%3Crect%20x%3D%2712.60%27%20y%3D%278.20%27%20width%3D%273.50%27%20height%3D%276.50%27%20rx%3D%271.75%27%2F%3E%3Crect%20x%3D%2715.20%27%20y%3D%279.40%27%20width%3D%273.40%27%20height%3D%275.50%27%20rx%3D%271.70%27%2F%3E%3Crect%20x%3D%275.00%27%20y%3D%2713.00%27%20width%3D%273.30%27%20height%3D%275.60%27%20rx%3D%271.65%27%2F%3E%3Crect%20x%3D%276.40%27%20y%3D%2711.60%27%20width%3D%2712.00%27%20height%3D%2710.40%27%20rx%3D%273.60%27%2F%3E%3C%2Fg%3E%3Crect%20x%3D%279.1%27%20y%3D%273.2%27%20width%3D%271.4%27%20height%3D%279%27%20rx%3D%270.7%27%20fill%3D%27%23c79bf0%27%2F%3E%3C%2Fsvg%3E") 9 2, auto',
-		pixel: 'url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2716%27%20height%3D%2724%27%20viewBox%3D%270%200%208%2012%27%20shape-rendering%3D%27crispEdges%27%3E%3Cg%20fill%3D%27%23150a24%27%3E%3Crect%20x%3D%271%27%20y%3D%270%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%272%27%20y%3D%271%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%273%27%20y%3D%272%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%274%27%20y%3D%273%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%275%27%20y%3D%274%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%276%27%20y%3D%275%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%277%27%20y%3D%276%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%275%27%20y%3D%278%27%20width%3D%273%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%272%27%20y%3D%279%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%275%27%20y%3D%279%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%271%27%20y%3D%2710%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%273%27%20y%3D%2710%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%276%27%20y%3D%2710%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%270%27%20y%3D%2711%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%274%27%20y%3D%2711%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%277%27%20y%3D%2711%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%27%238b4fc9%27%3E%3Crect%20x%3D%270%27%20y%3D%270%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%270%27%20y%3D%271%27%20width%3D%272%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%270%27%20y%3D%272%27%20width%3D%273%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%270%27%20y%3D%273%27%20width%3D%274%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%270%27%20y%3D%274%27%20width%3D%275%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%270%27%20y%3D%275%27%20width%3D%276%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%270%27%20y%3D%276%27%20width%3D%277%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%270%27%20y%3D%277%27%20width%3D%278%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%270%27%20y%3D%278%27%20width%3D%275%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%270%27%20y%3D%279%27%20width%3D%272%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%273%27%20y%3D%279%27%20width%3D%272%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%270%27%20y%3D%2710%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%274%27%20y%3D%2710%27%20width%3D%272%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%275%27%20y%3D%2711%27%20width%3D%272%27%20height%3D%271%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") 1 1, auto',
+		crosshair: 'url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2722%27%20height%3D%2722%27%20viewBox%3D%270%200%2024%2024%27%3E%3Cpath%20d%3D%27M11%202%20H13%20V11%20H22%20V13%20H13%20V22%20H11%20V13%20H2%20V11%20H11%20Z%27%20fill%3D%27%238b4fc9%27%20stroke%3D%27%23150a24%27%20stroke-width%3D%272.6%27%20stroke-linejoin%3D%27round%27%20paint-order%3D%27stroke%27%2F%3E%3C%2Fsvg%3E") 11 11, auto',
+		default: 'url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2722%27%20height%3D%2722%27%20viewBox%3D%270%200%2024%2024%27%3E%3Cpath%20d%3D%27M3.5%202.2%20L3.5%2019.6%20L8.0%2015.4%20L10.9%2021.8%20L13.9%2020.4%20L11.1%2014.2%20L16.9%2014.0%20Z%27%20fill%3D%27%238b4fc9%27%20stroke%3D%27%23150a24%27%20stroke-width%3D%272.6%27%20stroke-linejoin%3D%27round%27%20paint-order%3D%27stroke%27%2F%3E%3Cpath%20d%3D%27M5.1%205.0%20L5.1%2015.6%27%20stroke%3D%27%23c79bf0%27%20stroke-width%3D%271.3%27%20stroke-linecap%3D%27round%27%20fill%3D%27none%27%2F%3E%3C%2Fsvg%3E") 3 2, auto',
+		'ew-resize': 'url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2722%27%20height%3D%2722%27%20viewBox%3D%270%200%2024%2024%27%3E%3Cpath%20d%3D%27M1.4%2012%20L6.5%208%20V10.6%20H17.5%20V8%20L22.6%2012%20L17.5%2016%20V13.4%20H6.5%20V16%20Z%27%20fill%3D%27%238b4fc9%27%20stroke%3D%27%23150a24%27%20stroke-width%3D%272.6%27%20stroke-linejoin%3D%27round%27%20paint-order%3D%27stroke%27%2F%3E%3C%2Fsvg%3E") 11 11, auto',
+		grab: 'url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2722%27%20height%3D%2722%27%20viewBox%3D%270%200%2024%2024%27%3E%3Cg%20fill%3D%27%23150a24%27%3E%3Crect%20x%3D%275.80%27%20y%3D%272.40%27%20width%3D%276.40%27%20height%3D%2712.20%27%20rx%3D%273.20%27%2F%3E%3Crect%20x%3D%279.20%27%20y%3D%271.20%27%20width%3D%276.40%27%20height%3D%2713.40%27%20rx%3D%273.20%27%2F%3E%3Crect%20x%3D%2712.60%27%20y%3D%272.40%27%20width%3D%276.40%27%20height%3D%2712.20%27%20rx%3D%273.20%27%2F%3E%3Crect%20x%3D%273.00%27%20y%3D%277.40%27%20width%3D%276.20%27%20height%3D%279.20%27%20rx%3D%273.10%27%2F%3E%3Crect%20x%3D%274.00%27%20y%3D%278.80%27%20width%3D%2716.20%27%20height%3D%2713.80%27%20rx%3D%275.40%27%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%27%238b4fc9%27%3E%3Crect%20x%3D%277.40%27%20y%3D%274.00%27%20width%3D%273.20%27%20height%3D%279.00%27%20rx%3D%271.60%27%2F%3E%3Crect%20x%3D%2710.80%27%20y%3D%272.80%27%20width%3D%273.20%27%20height%3D%2710.20%27%20rx%3D%271.60%27%2F%3E%3Crect%20x%3D%2714.20%27%20y%3D%274.00%27%20width%3D%273.20%27%20height%3D%279.00%27%20rx%3D%271.60%27%2F%3E%3Crect%20x%3D%274.60%27%20y%3D%279.00%27%20width%3D%273.00%27%20height%3D%276.00%27%20rx%3D%271.50%27%2F%3E%3Crect%20x%3D%275.60%27%20y%3D%2710.40%27%20width%3D%2713.00%27%20height%3D%2710.60%27%20rx%3D%273.80%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") 11 6, auto',
+		move: 'url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2722%27%20height%3D%2722%27%20viewBox%3D%270%200%2024%2024%27%3E%3Cpath%20d%3D%27M12%201.4%20L15.6%206%20H13.1%20V11%20H18.1%20V8.5%20L22.6%2012%20L18.1%2015.5%20V13%20H13.1%20V18%20H15.6%20L12%2022.6%20L8.4%2018%20H10.9%20V13%20H5.9%20V15.5%20L1.4%2012%20L5.9%208.5%20V11%20H10.9%20V6%20H8.4%20Z%27%20fill%3D%27%238b4fc9%27%20stroke%3D%27%23150a24%27%20stroke-width%3D%272.6%27%20stroke-linejoin%3D%27round%27%20paint-order%3D%27stroke%27%2F%3E%3C%2Fsvg%3E") 11 11, auto',
+		'not-allowed': 'url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2722%27%20height%3D%2722%27%20viewBox%3D%270%200%2024%2024%27%3E%3Cpath%20d%3D%27M12%202.6%20A9.4%209.4%200%201%201%2011.99%202.6%20Z%20M12%205.8%20A6.2%206.2%200%201%200%2012.01%205.8%20Z%20M6.6%2016.6%20L16.6%206.6%20L18.2%208.2%20L8.2%2018.2%20Z%27%20fill%3D%27%238b4fc9%27%20fill-rule%3D%27evenodd%27%20stroke%3D%27%23150a24%27%20stroke-width%3D%272.6%27%20stroke-linejoin%3D%27round%27%20paint-order%3D%27stroke%27%2F%3E%3C%2Fsvg%3E") 11 11, auto',
+		'ns-resize': 'url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2722%27%20height%3D%2722%27%20viewBox%3D%270%200%2024%2024%27%3E%3Cpath%20d%3D%27M12%201.4%20L16%206.5%20H13.4%20V17.5%20H16%20L12%2022.6%20L8%2017.5%20H10.6%20V6.5%20H8%20Z%27%20fill%3D%27%238b4fc9%27%20stroke%3D%27%23150a24%27%20stroke-width%3D%272.6%27%20stroke-linejoin%3D%27round%27%20paint-order%3D%27stroke%27%2F%3E%3C%2Fsvg%3E") 11 11, auto',
+		pointer: 'url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2722%27%20height%3D%2722%27%20viewBox%3D%270%200%2024%2024%27%3E%3Cg%20fill%3D%27%23150a24%27%3E%3Crect%20x%3D%276.70%27%20y%3D%270.60%27%20width%3D%277.10%27%20height%3D%2715.20%27%20rx%3D%273.55%27%2F%3E%3Crect%20x%3D%2711.00%27%20y%3D%276.60%27%20width%3D%276.70%27%20height%3D%279.70%27%20rx%3D%273.35%27%2F%3E%3Crect%20x%3D%2713.60%27%20y%3D%277.80%27%20width%3D%276.60%27%20height%3D%278.70%27%20rx%3D%273.30%27%2F%3E%3Crect%20x%3D%273.40%27%20y%3D%2711.40%27%20width%3D%276.50%27%20height%3D%278.80%27%20rx%3D%273.25%27%2F%3E%3Crect%20x%3D%274.80%27%20y%3D%2710.00%27%20width%3D%2715.20%27%20height%3D%2713.60%27%20rx%3D%275.20%27%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%27%238b4fc9%27%3E%3Crect%20x%3D%278.30%27%20y%3D%272.20%27%20width%3D%273.90%27%20height%3D%2712.00%27%20rx%3D%271.95%27%2F%3E%3Crect%20x%3D%2712.60%27%20y%3D%278.20%27%20width%3D%273.50%27%20height%3D%276.50%27%20rx%3D%271.75%27%2F%3E%3Crect%20x%3D%2715.20%27%20y%3D%279.40%27%20width%3D%273.40%27%20height%3D%275.50%27%20rx%3D%271.70%27%2F%3E%3Crect%20x%3D%275.00%27%20y%3D%2713.00%27%20width%3D%273.30%27%20height%3D%275.60%27%20rx%3D%271.65%27%2F%3E%3Crect%20x%3D%276.40%27%20y%3D%2711.60%27%20width%3D%2712.00%27%20height%3D%2710.40%27%20rx%3D%273.60%27%2F%3E%3C%2Fg%3E%3Crect%20x%3D%279.1%27%20y%3D%273.2%27%20width%3D%271.4%27%20height%3D%279%27%20rx%3D%270.7%27%20fill%3D%27%23c79bf0%27%2F%3E%3C%2Fsvg%3E") 9 2, auto',
+		text: 'url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2722%27%20height%3D%2722%27%20viewBox%3D%270%200%2024%2024%27%3E%3Cpath%20d%3D%27M8.5%203%20H15.5%20V5%20H13%20V19%20H15.5%20V21%20H8.5%20V19%20H11%20V5%20H8.5%20Z%27%20fill%3D%27%238b4fc9%27%20stroke%3D%27%23150a24%27%20stroke-width%3D%272.6%27%20stroke-linejoin%3D%27round%27%20paint-order%3D%27stroke%27%2F%3E%3C%2Fsvg%3E") 11 11, auto',
+		wait: 'url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2722%27%20height%3D%2722%27%20viewBox%3D%270%200%2024%2024%27%3E%3Cpath%20d%3D%27M5.5%202.5%20H18.5%20V5%20L13.4%2012%20L18.5%2019%20V21.5%20H5.5%20V19%20L10.6%2012%20L5.5%205%20Z%27%20fill%3D%27%238b4fc9%27%20stroke%3D%27%23150a24%27%20stroke-width%3D%272.6%27%20stroke-linejoin%3D%27round%27%20paint-order%3D%27stroke%27%2F%3E%3C%2Fsvg%3E") 11 11, auto',
 	};
 
+	/* The pack is applied as one stylesheet rather than an inline style on
+	   <html>. A cursor set is about every role - links, text fields, the
+	   draggable title bars, disabled buttons - and only a rule per selector
+	   can reach those. Removing the element restores the system cursors
+	   exactly, with nothing left behind on elements. */
+	var cursorSheet = null;
+
+	function cursorCss() {
+		var c = CURSORS;
+		return [
+			'html, html *{cursor:' + c.default + '}',
+			'html a,html button,html select,html summary,html label,html [role="button"],',
+			'html .b88,html .modeBtn,html .btn,html .formatBtn{cursor:' + c.pointer + '}',
+			'html input[type="text"],html input[type="email"],html input[type="url"],',
+			'html input[type="number"],html textarea{cursor:' + c.text + '}',
+			'html .title-bar{cursor:' + c.move + '}',
+			'html .title-bar:active{cursor:' + c.grab + '}',
+			'html :disabled,html [aria-disabled="true"]{cursor:' + c['not-allowed'] + '}',
+			'html progress,html .meter{cursor:' + c.wait + '}',
+			'html .work-shot,html .shrine-gallery a{cursor:' + c.crosshair + '}',
+			'html [data-desktop]{cursor:' + c.default + '}',
+		].join(' ');
+	}
+
 	function applyCursor() {
-		// An unknown or missing name falls back to the system cursor rather
-		// than to a broken url(), so a stale stored value cannot leave the
-		// page with no pointer at all.
-		var css = CURSORS[state.cursor];
-		document.documentElement.style.cursor = css || '';
+		if (state.cursor && !cursorSheet) {
+			cursorSheet = document.createElement('style');
+			cursorSheet.id = 'jccg-cursors';
+			cursorSheet.textContent = cursorCss();
+			document.head.appendChild(cursorSheet);
+		} else if (!state.cursor && cursorSheet) {
+			cursorSheet.remove();
+			cursorSheet = null;
+		}
 	}
 
 	/* ---------- the toy switches ------------------------------------- */
 	function buildControls() {
 		var box = document.querySelector('[data-toys]');
 		if (!box) return;
-		var options = Object.keys(CURSORS)
-			.map(function (name) {
-				return '<option value="' + name + '">' + name + '</option>';
-			})
-			.join('');
 		box.innerHTML =
 			'<label><input type="checkbox" data-toy="sprite" /> corner mascot</label>' +
-			'<label><input type="checkbox" data-toy="saver" /> idle screensaver</label>' +
-			'<label class="toy-select">cursor ' +
-			'<select data-cursor><option value="off">off</option>' + options + '</select></label>';
+			'<label><input type="checkbox" data-toy="cursor" /> unseen hand cursors</label>' +
+			'<label><input type="checkbox" data-toy="saver" /> idle screensaver</label>';
 
 		box.querySelectorAll('input[data-toy]').forEach(function (input) {
 			input.checked = !!state[input.dataset.toy];
 			input.addEventListener('change', function () {
 				state[input.dataset.toy] = input.checked;
 				savePrefs(state);
+				if (input.dataset.toy === 'cursor') applyCursor();
 				if (input.dataset.toy === 'sprite') {
 					if (input.checked && !el) {
 						buildSprite();
@@ -246,15 +276,6 @@
 			});
 		});
 
-		var picker = box.querySelector('select[data-cursor]');
-		if (picker) {
-			picker.value = CURSORS[state.cursor] ? state.cursor : 'off';
-			picker.addEventListener('change', function () {
-				state.cursor = picker.value;
-				savePrefs(state);
-				applyCursor();
-			});
-		}
 	}
 
 	/* ---------- go ---------------------------------------------------- */
