@@ -2,13 +2,22 @@
 """Generates assets/mascot/*.svg - Puck, at 32x32.
 
 Original pixel art of Puck from Re:Zero (Kadokawa / White Fox). Drawn here
-rather than copied, and used as a personal site mascot.
+rather than copied, since these pages are public.
 
-Built from shape masks instead of a hand-typed grid so the silhouette can be
-adjusted and re-rendered rather than retyped. It follows the usual rules: one
-light direction (top-left), a real colour ramp per material with shadows
-shifted toward blue, a consistent 1px outline added outside the silhouette,
-and no pillow shading - shade follows the light rather than ringing the edge.
+The first version of this file stacked ellipses and ran a procedural shading
+pass over them. That produces a creature, but not *this* creature - likeness
+lives in the face, and a disc with an auto-shader gives you a generic grey
+blob every time. So the art is hand-authored on a grid.
+
+Only the left half is written out; the right half is mirrored from it. That
+guarantees a symmetric face for free and halves the work, and the handful of
+things that are genuinely asymmetric - his gold hoop, the tail, a raised paw -
+are added afterwards.
+
+Puck's tells, and why each one is in here: light grey and white fur, large
+aqua eyes set high and wide, big pointed ears with pink inside, a small pink
+nose, a thick curling tail as long as his body, and the single gold hoop on
+his left ear. Miss the ears and the eyes and it reads as a mouse.
 
     python tools/make_puck.py
 """
@@ -16,55 +25,92 @@ import io
 import os
 
 N = 32
+H = N // 2
 
-# Ramps. Shadows lean blue and highlights lean warm; that hue shift is most of
-# what separates pixel art from flat clip art.
+# Ramps: shadows lean blue, highlights lean warm.
 C = {
-    'o': '#232838',   # outline - blue-black, not pure black
-    'W': '#f4f7fc',   # fur highlight
-    'F': '#d3dbe8',   # fur base
-    'S': '#a6b2c6',   # fur shadow
-    'D': '#77869e',   # fur deep shadow
+    'o': '#232838',   # outline - blue-black, never pure black
+    'W': '#f7f9fd',   # fur highlight
+    'F': '#dbe2ee',   # fur base
+    'S': '#aab6c9',   # fur shadow
+    'D': '#8592a8',   # fur deep shadow
     'P': '#f6a8bd',   # pink - inner ear and nose
     'p': '#d4809a',   # pink shadow
     'E': '#5fe0d6',   # eye - the aqua he is known for
-    'e': '#22a79f',   # eye shadow
+    'e': '#1d8f88',   # eye shadow
     'H': '#ffffff',   # eye glint
     'G': '#ffd166',   # earring gold
     'g': '#d2a034',   # earring shadow
 }
 
-BODY = 'WFSD'
+# Left half only, 16 columns wide. Column 15 is the centre line, so anything
+# touching it becomes 2px wide after mirroring.
+LEFT = [
+    "................",  # 0
+    "......o.........",  # 1   ear tip
+    ".....oPo........",  # 2
+    ".....oPPo.......",  # 3
+    "....oWPPo.......",  # 4
+    "....oWFPPo......",  # 5
+    "...oWFFPPo......",  # 6
+    "...oWFFFPo..oooo",  # 7   ear meets the crown of the head
+    "..oWFFFFFooWWWWW",  # 8
+    "..oWFFFFWWWWWWWW",  # 9
+    ".oWFFFWWWWWWWWWW",  # 10
+    ".oWFFWWWWWWWWWWW",  # 11
+    ".oWFWWWWWWWWWWWW",  # 12
+    ".oFWWoooooWWWWWW",  # 13  eyes start - big, set high and wide
+    ".oFWoEEEEEoWWWWW",  # 14
+    ".oFWoEHEEEoWWWWW",  # 15  glint top-left, matching the light
+    ".oFWoEEEEEoWWWWW",  # 16
+    ".oFWoEEEEeoWWWWW",  # 17
+    ".oFWWoooooWWWWPP",  # 18  nose
+    ".oSFWWWWWWWWWWPP",  # 19
+    "..oSFWWWWWWWWWWW",  # 20
+    "...oSFFWWWWWWWWW",  # 21
+    "....oSSFFFWWWWWW",  # 22
+    "......ooSSSFFFFF",  # 23
+    ".........oooSSSS",  # 24
+    "................",  # 25
+    "................",  # 26
+    "................",  # 27
+    "................",  # 28
+    "................",  # 29
+    "................",  # 30
+    "................",  # 31
+]
 
 
-def blank():
-    return [['.' for _ in range(N)] for _ in range(N)]
+def mirrored():
+    """Left half plus its reflection - a symmetric face, guaranteed."""
+    grid = []
+    for row in LEFT:
+        assert len(row) == H, f'row must be {H} wide, got {len(row)}'
+        grid.append(list(row + row[::-1]))
+    assert len(grid) == N
+    return grid
 
 
-def disc(grid, cx, cy, rx, ry, ch):
-    for y in range(N):
-        for x in range(N):
-            if ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 <= 1.0:
-                grid[y][x] = ch
-
-
-def blob(grid, pts, ch):
+def put(grid, pts, ch):
     for x, y in pts:
         if 0 <= x < N and 0 <= y < N:
             grid[y][x] = ch
 
 
-def stroke(grid, pts, ch, r=1):
-    """Walk a polyline with a round brush - a 1px path reads as a wire at
-    this size, and hand-placing every pixel of a curve is how the first tail
-    ended up closing into a loop."""
+def stroke(grid, pts, ch, r=1, only_empty=True):
+    """Round brush along a polyline. `only_empty` keeps the tail from carving
+    into the body it grows out of."""
     for cx, cy in pts:
         for dy in range(-r, r + 1):
             for dx in range(-r, r + 1):
-                if dx * dx + dy * dy <= r * r + 0.6:
-                    x, y = cx + dx, cy + dy
-                    if 0 <= x < N and 0 <= y < N:
-                        grid[y][x] = ch
+                if dx * dx + dy * dy > r * r + 0.6:
+                    continue
+                x, y = cx + dx, cy + dy
+                if not (0 <= x < N and 0 <= y < N):
+                    continue
+                if only_empty and grid[y][x] != '.':
+                    continue
+                grid[y][x] = ch
 
 
 def filled(grid, x, y):
@@ -72,109 +118,55 @@ def filled(grid, x, y):
 
 
 def outline(grid, ch='o'):
-    """1px dark edge placed outside the silhouette, so it never eats detail."""
-    edge = []
-    for y in range(N):
-        for x in range(N):
-            if grid[y][x] != '.':
-                continue
-            for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-                if filled(grid, x + dx, y + dy):
-                    edge.append((x, y))
-                    break
+    """1px dark edge outside the silhouette, 4-neighbour so it never bridges
+    a gap into a solid plate."""
+    edge = [
+        (x, y)
+        for y in range(N)
+        for x in range(N)
+        if grid[y][x] == '.'
+        and any(filled(grid, x + dx, y + dy) for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))
+    ]
     for x, y in edge:
         grid[y][x] = ch
 
 
-def shade(grid):
-    """Light from the top-left. A pixel with nothing up-left of it catches the
-    highlight; one with nothing down-right of it falls into shadow. Ringing
-    every edge equally instead is the pillow-shading mistake."""
-    src = [row[:] for row in grid]
-    for y in range(N):
+def close_eyes(grid):
+    """Blink and sleep: the eye block collapses to a lash line."""
+    for y in range(13, 19):
         for x in range(N):
-            if src[y][x] not in BODY:
-                continue
-            if not filled(src, x - 1, y - 1):
+            if grid[y][x] in 'EeH':
                 grid[y][x] = 'W'
-            elif not filled(src, x + 2, y + 2):
-                grid[y][x] = 'D'
-            elif not filled(src, x + 1, y + 1):
-                grid[y][x] = 'S'
-            else:
-                grid[y][x] = 'F'
-
-
-def build_base():
-    g = blank()
-
-    disc(g, 15, 23, 6.5, 5.0, 'F')     # body, deliberately small
-    disc(g, 15, 13, 10.0, 9.0, 'F')    # head, deliberately large
-
-    # Tail last, and clear of the body. Drawn before the discs it was painted
-    # over and only a sliver survived, which read as an outline artefact.
-    stroke(g, [(20, 26), (23, 27), (25, 26), (27, 24),
-               (28, 22), (28, 19), (27, 17)], 'F')
-
-    # Floppy ears: wide at the base, drooping outward and down.
-    blob(g, [(7, 3), (8, 3), (6, 4), (7, 4), (8, 4), (9, 4),
-             (5, 5), (6, 5), (7, 5), (8, 5), (9, 5),
-             (4, 6), (5, 6), (6, 6), (7, 6), (8, 6),
-             (4, 7), (5, 7), (6, 7), (7, 7)], 'F')
-    blob(g, [(24, 3), (23, 3), (25, 4), (24, 4), (23, 4), (22, 4),
-             (26, 5), (25, 5), (24, 5), (23, 5), (22, 5),
-             (27, 6), (26, 6), (25, 6), (24, 6), (23, 6),
-             (27, 7), (26, 7), (25, 7), (24, 7)], 'F')
-    return g
-
-
-def add_features(g, pose):
-    # Inner ears
-    blob(g, [(6, 5), (7, 5), (6, 6), (7, 6), (5, 6)], 'P')
-    blob(g, [(25, 5), (24, 5), (25, 6), (24, 6), (26, 6)], 'P')
-    blob(g, [(5, 7), (6, 7)], 'p')
-    blob(g, [(26, 7), (25, 7)], 'p')
-
-    if pose in ('idle', 'wave'):
-        for ex in (9, 19):
-            blob(g, [(ex + 1, 10), (ex + 2, 10),
-                     (ex, 11), (ex + 1, 11), (ex + 2, 11), (ex + 3, 11),
-                     (ex, 12), (ex + 1, 12), (ex + 2, 12), (ex + 3, 12),
-                     (ex, 13), (ex + 1, 13), (ex + 2, 13), (ex + 3, 13),
-                     (ex + 1, 14), (ex + 2, 14)], 'E')
-            blob(g, [(ex + 3, 13), (ex + 1, 14), (ex + 2, 14)], 'e')
-            blob(g, [(ex + 1, 10), (ex, 11)], 'H')
-    else:
-        # Blink and sleep shut the eyes to a lash line.
-        for ex in (9, 19):
-            blob(g, [(ex, 12), (ex + 1, 12), (ex + 2, 12), (ex + 3, 12)], 'o')
-
-    # Where the head meets the body - without it the two discs read as one blob
-    blob(g, [(11, 20), (12, 20), (13, 20), (14, 20), (15, 20),
-             (16, 20), (17, 20), (18, 20), (19, 20)], 'S')
-
-    # Nose and muzzle
-    blob(g, [(15, 15), (16, 15), (15, 16)], 'P')
-    blob(g, [(13, 17), (14, 17), (17, 17), (18, 17)], 'S')
-
-    # The gold hoop on his left ear (screen right) - his single clearest tell.
-    blob(g, [(27, 8), (28, 8), (28, 9)], 'G')
-    blob(g, [(27, 9)], 'g')
-
-    if pose == 'wave':
-        # The paw is raised beside the head, outside the silhouette. Tucked
-        # against the body it was simply repainted by the head and the pose
-        # looked identical to idle.
-        blob(g, [(2, 12), (3, 12), (1, 13), (2, 13), (3, 13),
-                 (1, 14), (2, 14), (3, 14), (2, 15), (3, 15),
-                 (3, 16), (4, 16), (4, 17), (5, 17)], 'W')
-        blob(g, [(3, 14), (3, 15), (4, 17)], 'F')
+    for ex in (5, 21):
+        put(grid, [(ex + i, 15) for i in range(6)], 'o')
 
 
 def build(pose):
-    g = build_base()
-    shade(g)
-    add_features(g, pose)
+    g = mirrored()
+
+    # No tail. This is a head, not a whole cat - the sprite is 32px and the
+    # face is what carries the likeness, so the body was cut. A tail growing
+    # out of nothing just read as a stray nub in the corner.
+
+    # His single clearest tell: one gold hoop, on his left ear (screen right).
+    put(g, [(25, 8), (26, 8), (26, 9), (25, 10)], 'G')
+    put(g, [(26, 10)], 'g')
+
+    if pose in ('blink', 'sleep'):
+        close_eyes(g)
+    if pose == 'sleep':
+        put(g, [(14, 21), (15, 21), (16, 21), (17, 21)], 'S')
+
+    if pose == 'wave':
+        # A wink, not a raised paw. The head fills the sprite edge to edge, so
+        # there is nowhere outside the silhouette for an arm to go - and a paw
+        # drawn inside it just vanished.
+        for y in range(13, 19):
+            for x in range(0, N // 2):
+                if g[y][x] in 'EeH':
+                    g[y][x] = 'W'
+        put(g, [(5 + i, 15) for i in range(6)], 'o')
+
     outline(g)
     return g
 
