@@ -21,7 +21,7 @@
 				<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin" />
 				<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen&amp;family=IBM+Plex+Sans:wght@400;600&amp;family=IBM+Plex+Mono:wght@400&amp;display=swap" />
 				<link rel="stylesheet" href="/assets/style.css" />
-				<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+				<link rel="icon" href="/assets/favicon.png" type="image/png" />
 				<style>
 					.feed-note {
 						font-family: var(--font-mono);

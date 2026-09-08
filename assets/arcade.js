@@ -82,7 +82,7 @@
 				bars[k].style.width = pet[k].toFixed(0) + '%';
 				bars[k].dataset.low = pet[k] < 25 ? 'true' : 'false';
 			});
-			sprite.src = '../assets/mascot/' + pose() + '.svg';
+			sprite.src = '../assets/mascot/' + pose() + '.png';
 			var days = Math.floor((Date.now() - pet.born) / DAY);
 			document.getElementById('petAge').textContent =
 				days === 0 ? 'hatched today' : days === 1 ? '1 day old' : days + ' days old';

@@ -1,167 +1,202 @@
 #!/usr/bin/env python3
-"""Generates assets/mascot/*.svg - Puck, at 32x32.
+"""Builds every Puck asset from the one source render.
 
-Original pixel art of Puck from Re:Zero (Kadokawa / White Fox), drawn here
-rather than copied, since these pages are public.
+`assets/mascot/Puck_Render.webp` is art the site owner supplies and owns. Both
+the display images and the pixel sprite are derived from it, so the mascot is
+one character everywhere instead of a drawing and a separate guess at it.
 
-Two earlier attempts failed for reasons worth recording:
+Three earlier hand-drawn attempts are why this file works the way it does:
+stacked ellipses with an auto-shader gave a generic blob; mirroring one half
+flattened his asymmetric ears, which are the thing that identifies him; and
+even a careful hand-authored grid could not reach the quality of real art. So
+the sprite is now *downsampled* from the render rather than guessed at.
 
-1. Stacking ellipses and running an auto-shader over them. That reliably
-   produces a creature and just as reliably the wrong one - likeness lives in
-   the face, and a disc with a shading pass is a generic grey blob whatever
-   character it is meant to be.
-2. Authoring one half and mirroring it. Symmetric faces are cheap that way,
-   but *Puck's head is not symmetric*: his left ear stands up in a point while
-   his right ear folds over, and the gold hoop hangs from the folded one.
-   Mirroring flattened exactly the detail that identifies him, which is why
-   the earring read as something stuck on rather than worn.
-
-So the full grid is hand-authored. Rows are padded on the right, so only the
-meaningful prefix has to be typed, and an assert catches anything too long.
-
-Working from reference, the tells that matter at this size: grey-lavender
-outer fur against a white face and chest, a white V marking on the forehead,
-large teal almond eyes with strong highlights, pink blush, a small pink nose,
-the asymmetric ears, and the single gold hoop.
+Outputs:
+    assets/mascot/puck-512.webp   hero / large display
+    assets/mascot/puck-256.webp   medium
+    assets/mascot/idle.png        96x96 pixel sprite
+    assets/mascot/blink.png       eyes shut
+    assets/mascot/wave.png        winking
+    assets/mascot/sleep.png       eyes shut, drowsier
 
     python tools/make_puck.py
 """
 import io
 import os
 
-N = 32
+from PIL import Image
 
-C = {
-    'o': '#3a3547',   # outline - soft dark violet, not black
-    'G': '#c9c6d4',   # outer fur, grey-lavender
-    'S': '#aaa5ba',   # fur shadow
-    'D': '#8b8799',   # fur deep shadow
-    'W': '#fbfaff',   # face, chest, muzzle
-    'w': '#e6e4ef',   # white in shadow
-    'P': '#f0c0c8',   # inner ear
-    'B': '#f5b0be',   # blush
-    'N': '#ef9fb0',   # nose
-    'E': '#5fc9d8',   # eye, teal
-    'e': '#2e8ba0',   # eye depth
-    'H': '#ffffff',   # eye highlight
-    'Y': '#e8c05a',   # earring gold
-    'y': '#bf9530',   # earring shadow
-}
+SPRITE = 96
+PALETTE_COLORS = 40
+SRC_NAME = 'Puck_Render.webp'
 
-# Left ear points up; the right ear folds over and carries the hoop. The white
-# V on the forehead runs from between the ears down between the eyes.
-ART = [
-    ".......oo",                                      # 0
-    "......oGGo",                                     # 1
-    "......oGPGo",                                    # 2
-    ".....oGPPGo...........oooo",                     # 3
-    ".....oGPPGo........oooGGGGo",                    # 4
-    "....oGPPPGooooooooooGGGGGGo",                    # 5
-    "....oGPPGGGGGGGGGGGGGGPPGGo",                    # 6
-    "...oGGPGGGGGGWGGGGGGGGPPGGo",                    # 7
-    "...oGGGGGGGGWWWGGGGGGGGGGoYo",                   # 8
-    "..oGGGGGGGGWWWWWGGGGGGGGGoYYo",                  # 9
-    "..oGGGGGGGWWWWWWWGGGGGGGGGoYo",                  # 10
-    ".oGGGGGGGWWWWWWWWWGGGGGGGGo",                    # 11
-    ".oGGGGGGWWWWWWWWWWWGGGGGGGo",                    # 12
-    ".oGGGooooWWWWWWWWWooooGGGGo",                    # 13  eyes: narrow
-    ".oGGoHHEEoWWWWWWWoHHEEoGGGo",                    # 14  and tall, the
-    ".oGGoHEEEoWWWWWWWoHEEEoGGGo",                    # 15  way an almond
-    ".oGGoEEEEoWWWWWWWoEEEEoGGGo",                    # 16  eye reads - a
-    ".oGGoEEeeoWWWWWWWoEEeeoGGGo",                    # 17  wide block looks
-    ".oGGGooooWWWWNNWWWooooGGGGo",                    # 18  like goggles
-    ".oGBBGoWWWWWWNNWWWWoGBBGGo",                     # 19
-    "..oGGGWWWWWWWWWWWWWWWGGGo",                      # 20
-    "..oGGGWWWWWWWWWWWWWWWGGGo",                      # 21
-    "...oGGGWWWWWWWWWWWWWGGGo",                       # 22
-    "....oGGGGWWWWWWWWWGGGGo",                        # 23
-    "......oGGGGWWWWWWGGGGo",                         # 24
-    ".......ooGGGGGGGGGGoo",                          # 25
-    ".........oooooooooo",                            # 26
-]
+# The sprite is a head crop, not the whole cat. Fitting the full sitting pose
+# into 96px leaves the head about 30px and each eye about 4px, which is too
+# small for a blink or a wink to register at all - the poses came out
+# indistinguishable from idle. Fractions of the trimmed subject box.
+HEAD_CROP = (0.26, 0.00, 0.665, 0.47)
 
 
-def grid():
-    g = []
-    for row in ART:
-        assert len(row) <= N, f'row is {len(row)} wide, max {N}'
-        g.append(list(row.ljust(N, '.')))
-    while len(g) < N:
-        g.append(list('.' * N))
-    return g
+def load_source(mascot_dir):
+    path = os.path.join(mascot_dir, SRC_NAME)
+    if not os.path.exists(path):
+        raise SystemExit(f'missing source art: {path}')
+    im = Image.open(path).convert('RGBA')
+    # Trim the transparent margin, otherwise the subject shrinks inside its
+    # own padding when we fit it to a square.
+    bbox = im.getbbox()
+    return im.crop(bbox) if bbox else im
 
 
-def put(g, pts, ch):
-    for x, y in pts:
-        if 0 <= x < N and 0 <= y < N:
-            g[y][x] = ch
+def crop_head(im):
+    """The head, as a fraction of the trimmed subject box."""
+    w, h = im.size
+    l, t, r, b = HEAD_CROP
+    return im.crop((round(w * l), round(h * t), round(w * r), round(h * b)))
 
 
-def close_eyes(g, side='both'):
-    """Shut the eyes to lash lines. Puck's eye blocks sit at rows 13-18."""
-    lo = 0 if side in ('both', 'left') else N // 2
-    hi = N if side in ('both', 'right') else N // 2
-    for y in range(13, 19):
-        for x in range(lo, hi):
-            if g[y][x] in 'EeH':
-                g[y][x] = 'W'
-    lashes = []
-    if side in ('both', 'left'):
-        lashes += [(4 + i, 15) for i in range(7)]
-    if side in ('both', 'right'):
-        lashes += [(17 + i, 15) for i in range(7)]
-    put(g, lashes, 'o')
+def fit_square(im, size):
+    """Scale to fit inside size x size, centred, on transparency."""
+    w, h = im.size
+    scale = min(size / w, size / h)
+    new = im.resize((max(1, round(w * scale)), max(1, round(h * scale))), Image.LANCZOS)
+    out = Image.new('RGBA', (size, size), (0, 0, 0, 0))
+    out.paste(new, ((size - new.width) // 2, (size - new.height) // 2), new)
+    return out
 
 
-def smile(g):
-    """A small w-shaped mouth under the nose. Drawn in rather than typed into
-    the grid so the muzzle stays a clean white field."""
-    put(g, [(12, 20), (15, 20), (13, 21), (14, 21)], 'o')
+def pixelate(im, size, colors):
+    """Downsample, then quantise. LANCZOS first keeps the shapes legible;
+    going straight to NEAREST at this ratio drops whole features like the
+    earring. Alpha is re-applied hard afterwards so edges stay crisp rather
+    than fading into a halo, which is what makes it read as pixel art.
+
+    Returns (quantised, clean). The clean downsample is kept because his eyes
+    are a small saturated region that quantisation flattens toward the fur -
+    finding them afterwards silently fails, which is what made blink and wink
+    come out identical to idle."""
+    clean = fit_square(im, size)
+    alpha = clean.getchannel('A').point(lambda a: 255 if a > 128 else 0)
+    rgb = clean.convert('RGB').quantize(colors=colors, method=Image.MEDIANCUT).convert('RGB')
+    out = rgb.convert('RGBA')
+    out.putalpha(alpha)
+    return out, clean
 
 
-def build(pose):
-    g = grid()
-    smile(g)
-    if pose == 'blink':
-        close_eyes(g)
-    elif pose == 'sleep':
-        close_eyes(g)
-        put(g, [(13, 22), (14, 22), (15, 22), (16, 22), (17, 22)], 'w')
-    elif pose == 'wave':
-        # A wink. The head fills the sprite, so there is nowhere outside the
-        # silhouette to raise a paw, and a paw drawn inside it disappears.
-        close_eyes(g, side='left')
-    return g
+def eye_pixels(im):
+    """Puck's eyes are the only strongly cyan region - his fur is neutral
+    grey-lavender and everything else is pink or gold."""
+    px = im.load()
+    found = []
+    for y in range(im.height):
+        for x in range(im.width):
+            r, g, b, a = px[x, y]
+            if a > 128 and b > r + 25 and g > r + 15 and b > 90:
+                found.append((x, y))
+    return found
 
 
-def to_svg(g, pose):
-    rects = []
-    for y in range(N):
-        x = 0
-        while x < N:
-            ch, run = g[y][x], 1
-            while x + run < N and g[y][x + run] == ch:
-                run += 1
-            if ch in C:
-                rects.append(
-                    f'<rect x="{x}" y="{y}" width="{run}" height="1" fill="{C[ch]}"/>'
-                )
-            x += run
-    return (
-        f'<svg xmlns="http://www.w3.org/2000/svg" width="{N}" height="{N}" '
-        f'viewBox="0 0 {N} {N}" shape-rendering="crispEdges" role="img" '
-        f'aria-label="Puck, the site mascot ({pose})">{"".join(rects)}</svg>\n'
-    )
+def close_eyes(im, eyes, side=None, lash=(58, 53, 71)):
+    """Shut the eyes by filling each eye's box with fur and laying a lash
+    across it.
+
+    An earlier version recoloured eye pixels one at a time using the nearest
+    non-eye neighbour. That neighbour is almost always the dark eye outline,
+    so the eye was repainted in a colour close to what it already was: 107
+    pixels changed and the result was indistinguishable from idle. Filling the
+    whole box with fur sampled from above the eye is what makes it read.
+
+    `side` of 'left' or 'right' winks. The split uses the midpoint of the eye
+    pixels rather than the image centre, because the subject is not centred.
+    """
+    im = im.copy()
+    if not eyes:
+        return im
+    xs = [x for x, _ in eyes]
+    mid = (min(xs) + max(xs)) // 2
+
+    groups = {'l': [], 'r': []}
+    for x, y in eyes:
+        groups['l' if x <= mid else 'r'].append((x, y))
+    if side == 'left':
+        groups['r'] = []
+    elif side == 'right':
+        groups['l'] = []
+
+    px = im.load()
+    for pts in groups.values():
+        if not pts:
+            continue
+        x0, x1 = min(x for x, _ in pts), max(x for x, _ in pts)
+        y0, y1 = min(y for _, y in pts), max(y for _, y in pts)
+
+        # Fur colour from just above the eye - reliably forehead, never lid.
+        cx = (x0 + x1) // 2
+        fur = (231, 229, 240, 255)
+        for dy in range(2, 8):
+            if y0 - dy >= 0 and px[cx, y0 - dy][3] > 128:
+                fur = px[cx, y0 - dy]
+                break
+
+        for y in range(y0, y1 + 1):
+            for x in range(x0, x1 + 1):
+                if px[x, y][3] > 128:
+                    px[x, y] = fur
+
+        # A lash line with the ends lifted, so it reads as a closed eye
+        # rather than a struck-through one.
+        row = y0 + round((y1 - y0) * 0.55)
+        span = x1 - x0
+        for x in range(x0, x1 + 1):
+            t = abs((x - x0) / span - 0.5) * 2 if span else 0
+            r = row - (1 if t > 0.65 else 0)
+            for dy in (0, 1):
+                if 0 <= r + dy < im.height and px[x, r + dy][3] > 128:
+                    px[x, r + dy] = lash + (255,)
+    return im
 
 
 def main():
     root = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
-    out = os.path.join(root, 'assets', 'mascot')
-    os.makedirs(out, exist_ok=True)
-    for pose in ('idle', 'blink', 'wave', 'sleep'):
-        path = os.path.join(out, f'{pose}.svg')
-        io.open(path, 'w', encoding='utf-8', newline='\n').write(to_svg(build(pose), pose))
-        print(f'wrote assets/mascot/{pose}.svg')
+    mascot = os.path.join(root, 'assets', 'mascot')
+    src = load_source(mascot)
+
+    for size in (512, 256):
+        out = fit_square(src, size)
+        path = os.path.join(mascot, f'puck-{size}.webp')
+        out.save(path, 'WEBP', quality=90, method=6)
+        print(f'wrote assets/mascot/puck-{size}.webp  {os.path.getsize(path) // 1024} KB')
+
+    idle, clean = pixelate(crop_head(src), SPRITE, PALETTE_COLORS)
+    eyes = eye_pixels(clean)
+
+    # Paint the eyes back in from the clean downsample. His eyes are a small
+    # saturated region, so whether the quantiser keeps a teal depends on the
+    # rest of the frame - tightening the crop was enough to lose it and leave
+    # him grey-eyed. Restoring them makes the one colour that identifies him
+    # independent of the palette.
+    src_px, dst_px = clean.load(), idle.load()
+    for x, y in eyes:
+        dst_px[x, y] = src_px[x, y]
+    print(f'found {len(eyes)} eye pixels; restored from the clean downsample')
+    poses = {
+        'idle': idle,
+        'blink': close_eyes(idle, eyes),
+        'wave': close_eyes(idle, eyes, side='left'),
+        'sleep': close_eyes(idle, eyes),
+    }
+    for name, im in poses.items():
+        path = os.path.join(mascot, f'{name}.png')
+        im.save(path, 'PNG', optimize=True)
+        print(f'wrote assets/mascot/{name}.png  {os.path.getsize(path) // 1024} KB')
+
+    # The hand-drawn SVGs are superseded; leaving them would let a stale path
+    # keep resolving and hide a mistake.
+    for name in ('idle', 'blink', 'wave', 'sleep'):
+        old = os.path.join(mascot, f'{name}.svg')
+        if os.path.exists(old):
+            os.remove(old)
+            print(f'removed stale assets/mascot/{name}.svg')
 
 
 if __name__ == '__main__':

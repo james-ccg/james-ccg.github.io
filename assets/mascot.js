@@ -43,7 +43,7 @@
 	var el, img, bubble, sleepTimer, blinkTimer;
 
 	function setPose(name) {
-		if (img) img.src = ROOT + 'assets/mascot/' + name + '.svg';
+		if (img) img.src = ROOT + 'assets/mascot/' + name + '.png';
 	}
 
 	function say(text, ms) {
@@ -70,7 +70,7 @@
 		el.className = 'byte';
 		el.innerHTML =
 			'<div class="byte-bubble" hidden></div>' +
-			'<img class="byte-img" width="16" height="16" alt="Puck, the site mascot" />' +
+			'<img class="byte-img" width="96" height="96" alt="Puck, the site mascot" />' +
 			'<button class="byte-hide" type="button" title="Hide Puck" aria-label="Hide Puck">x</button>';
 		document.body.appendChild(el);
 		img = el.querySelector('.byte-img');
