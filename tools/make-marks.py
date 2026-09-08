@@ -21,6 +21,8 @@ FONT = {
     'S': [".XX", "X..", ".X.", "..X", "XX."],
     'C': [".XX", "X..", "X..", "X..", ".XX"],
     'G': [".XX", "X..", "X.X", "X.X", ".XX"],
+    'X': ["X.X", "X.X", ".X.", "X.X", "X.X"],
+    'D': ["XX.", "X.X", "X.X", "X.X", "XX."],
     '-': ["...", "...", "XXX", "...", "..."],
 }
 GLYPH_W, GLYPH_H, TRACK = 3, 5, 1
@@ -58,17 +60,19 @@ def scanlines(x, w, y0, y1, step, h, fill, opacity):
 
 
 def build_badge():
-    mark, _ = word('J', 9, 8, 3, INK)
-    line1, w1 = word('JAMES', 38, 6, 2, TEXT)
-    line2, _ = word('-CCG', 38, 18, 2, AMBER)
-    assert 38 + w1 <= 86, f'wordmark overflows 88px: {w1}'
-    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="88" height="31" viewBox="0 0 88 31" shape-rendering="crispEdges" role="img" aria-label="james-ccg">
+    # JAMES on one line. Five glyphs is short enough to go up to scale 3 -
+    # 57px drawn - which is why the mark block trims to 24px; the assert keeps
+    # that honest if the name or the scale ever changes.
+    mark_w, text_x, scale = 24, 27, 3
+    mark, _ = word('J', 6, 8, 3, INK)
+    name, w_name = word('JAMES', text_x, 8, scale, TEXT)
+    assert text_x + w_name <= 86, f'wordmark overflows 88px: {text_x + w_name}'
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="88" height="31" viewBox="0 0 88 31" shape-rendering="crispEdges" role="img" aria-label="James">
 	<rect width="88" height="31" fill="{BG}"/>
-	<rect x="0" y="0" width="31" height="31" fill="{AMBER}"/>
+	<rect x="0" y="0" width="{mark_w}" height="31" fill="{AMBER}"/>
 	{mark}
-	{scanlines(0, 31, 1, 31, 4, 1, INK, 0.12)}
-	{line1}
-	{line2}
+	{scanlines(0, mark_w, 1, 31, 4, 1, INK, 0.12)}
+	{name}
 	<rect x="0" y="0" width="88" height="1" fill="#fff" fill-opacity="0.2"/>
 	<rect x="0" y="0" width="1" height="31" fill="#fff" fill-opacity="0.12"/>
 	<rect x="0" y="30" width="88" height="1" fill="#000" fill-opacity="0.5"/>

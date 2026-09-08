@@ -1,0 +1,223 @@
+/* ---------- arcade ------------------------------------------------- */
+.arcade-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+	gap: var(--gap);
+	padding-bottom: 10px;
+}
+
+.arcade-grid > .panel {
+	padding: 16px;
+	display: flex;
+	flex-direction: column;
+	gap: 11px;
+}
+
+.card-title {
+	font-family: var(--font-pixel);
+	font-size: 13px;
+	font-weight: 400;
+	margin: 0;
+	color: var(--text);
+}
+
+.card-sub {
+	font-family: var(--font-pixel);
+	font-size: 10px;
+	font-weight: 400;
+	margin: 6px 0 0;
+	color: var(--text-dim);
+	display: flex;
+	justify-content: space-between;
+}
+
+.card-lede {
+	margin: 0;
+	font-size: 13.5px;
+	color: var(--text-dim);
+}
+
+/* ---- pet ---- */
+.pet-stage {
+	position: relative;
+	display: grid;
+	place-items: center;
+	min-height: 128px;
+	background: var(--bg-tint);
+	border: 1px solid var(--border-soft);
+	border-radius: var(--radius);
+}
+
+.pet-sprite {
+	width: 96px;
+	height: 96px;
+	image-rendering: pixelated;
+	cursor: pointer;
+}
+
+.pet-bounce {
+	animation: pet-bounce 0.36s ease;
+}
+
+@keyframes pet-bounce {
+	0%, 100% { transform: translateY(0) scale(1); }
+	45% { transform: translateY(-10px) scale(1.06); }
+}
+
+.pet-speech {
+	position: absolute;
+	top: 10px;
+	right: 12px;
+	font-family: var(--font-pixel);
+	font-size: 9px;
+	color: var(--text);
+	background: var(--panel);
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	padding: 5px 7px;
+}
+
+.pet-stats {
+	display: grid;
+	gap: 7px;
+	margin: 0;
+}
+
+.pet-stats > div {
+	display: grid;
+	grid-template-columns: 54px 1fr;
+	align-items: center;
+	gap: 10px;
+}
+
+.pet-stats dt {
+	font-family: var(--font-mono);
+	font-size: 11.5px;
+	color: var(--text-dim);
+}
+
+.pet-stats dd {
+	margin: 0;
+}
+
+.meter {
+	display: block;
+	height: 9px;
+	background: var(--bg-tint);
+	border: 1px solid var(--border-soft);
+	border-radius: 2px;
+	overflow: hidden;
+}
+
+.meter i {
+	display: block;
+	height: 100%;
+	background: var(--online);
+	transition: width 0.3s ease;
+}
+
+.meter i[data-low='true'] {
+	background: #e2725b;
+}
+
+.pet-actions {
+	display: flex;
+	gap: 7px;
+	flex-wrap: wrap;
+}
+
+.pet-actions .btn {
+	padding: 9px 12px;
+	font-size: 10px;
+}
+
+.pet-note {
+	margin: 0;
+	font-family: var(--font-mono);
+	font-size: 11.5px;
+	color: var(--text-faint);
+}
+
+/* ---- gacha ---- */
+.gacha-slot {
+	display: grid;
+	place-items: center;
+	min-height: 128px;
+	background: var(--bg-tint);
+	border: 1px solid var(--border-soft);
+	border-radius: var(--radius);
+}
+
+.gacha-prize {
+	width: 84px;
+	height: 84px;
+	image-rendering: pixelated;
+}
+
+.gacha-prize.pop {
+	animation: pop 0.42s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+
+@keyframes pop {
+	0% { transform: scale(0.2) rotate(-18deg); opacity: 0; }
+	100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+
+.gacha-empty {
+	font-family: var(--font-pixel);
+	font-size: 17px;
+	color: var(--text-faint);
+	letter-spacing: 0.1em;
+}
+
+.gacha-msg {
+	margin: 0;
+	font-family: var(--font-pixel);
+	font-size: 10px;
+	color: var(--accent);
+	min-height: 14px;
+}
+
+.gacha-shelf {
+	display: grid;
+	grid-template-columns: repeat(5, 1fr);
+	gap: 6px;
+}
+
+.shelf-cell {
+	position: relative;
+	aspect-ratio: 1;
+	display: grid;
+	place-items: center;
+	background: var(--bg-tint);
+	border: 1px solid var(--border-soft);
+	border-radius: var(--radius);
+}
+
+.shelf-cell svg {
+	width: 74%;
+	height: 74%;
+	image-rendering: pixelated;
+}
+
+.shelf-cell.locked .locked-mark {
+	font-family: var(--font-pixel);
+	font-size: 11px;
+	color: var(--text-faint);
+	opacity: 0.5;
+}
+
+.shelf-cell .dupe {
+	position: absolute;
+	right: 2px;
+	bottom: 1px;
+	font-family: var(--font-mono);
+	font-size: 9.5px;
+	color: var(--text-faint);
+}
+
+.btn:disabled {
+	opacity: 0.5;
+	cursor: default;
+	transform: none;
+}

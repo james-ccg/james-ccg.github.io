@@ -107,6 +107,14 @@ html {
 	scroll-behavior: smooth;
 }
 
+/* The header is sticky, so an #anchor jump would park the target's heading
+   underneath it. Reserve the header's height plus a little air. */
+:target,
+section[id],
+[id^='top'] {
+	scroll-margin-top: 76px;
+}
+
 @media (prefers-reduced-motion: reduce) {
 	html {
 		scroll-behavior: auto;
@@ -539,11 +547,29 @@ header.site {
 	flex: 1;
 }
 
+/* Both tags are the same small pixel caps; only the newest one takes the
+   accent and a lead marker, so the difference registers without the row of
+   cards turning into a colour chart. */
 .work-tag {
 	font-family: var(--font-pixel);
 	font-size: 9px;
 	letter-spacing: 0.06em;
+	color: var(--text-faint);
+}
+
+.work-tag-latest {
 	color: var(--accent);
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.work-tag-latest::before {
+	content: '';
+	width: 5px;
+	height: 5px;
+	background: var(--accent);
+	flex: none;
 }
 
 .work h3 {
@@ -811,4 +837,129 @@ footer.site {
 	.badge-row {
 		grid-template-columns: 1fr;
 	}
+}
+
+/* ---------- Byte: the corner mascot ------------------------------- */
+.byte {
+	position: fixed;
+	right: 18px;
+	bottom: 18px;
+	z-index: 60;
+	width: 64px;
+	height: 64px;
+	cursor: pointer;
+	user-select: none;
+}
+
+.byte-img {
+	width: 64px;
+	height: 64px;
+	image-rendering: pixelated;
+	display: block;
+	filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.35));
+}
+
+.byte-hop {
+	animation: byte-hop 0.4s ease;
+}
+
+@keyframes byte-hop {
+	0%, 100% { transform: translateY(0); }
+	40% { transform: translateY(-11px); }
+}
+
+.byte-bubble {
+	position: absolute;
+	bottom: 68px;
+	right: 0;
+	white-space: nowrap;
+	font-family: var(--font-pixel);
+	font-size: 9px;
+	line-height: 1.4;
+	color: var(--text);
+	background: var(--panel);
+	border: var(--bord) solid var(--border);
+	border-radius: var(--radius);
+	padding: 7px 9px;
+}
+
+.byte-hide {
+	position: absolute;
+	top: -2px;
+	right: -2px;
+	width: 17px;
+	height: 17px;
+	padding: 0;
+	font-family: var(--font-pixel);
+	font-size: 8px;
+	line-height: 1;
+	background: var(--panel);
+	color: var(--text-faint);
+	border: 1px solid var(--border);
+	border-radius: 2px;
+	cursor: pointer;
+	opacity: 0;
+	transition: opacity 0.12s ease;
+}
+
+.byte:hover .byte-hide {
+	opacity: 1;
+}
+
+.byte-hide:hover {
+	color: var(--text);
+}
+
+/* ---------- idle screensaver -------------------------------------- */
+.saver {
+	position: fixed;
+	inset: 0;
+	z-index: 90;
+	display: none;
+	background: #0b0c11;
+}
+
+.saver.on {
+	display: block;
+}
+
+.saver-canvas {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+.saver-tag {
+	position: absolute;
+	left: 50%;
+	bottom: 42px;
+	transform: translateX(-50%);
+	font-family: var(--font-pixel);
+	font-size: 10px;
+	letter-spacing: 0.06em;
+	color: #4a4f68;
+}
+
+/* ---------- toy switches ------------------------------------------ */
+.toys {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px 18px;
+	font-family: var(--font-mono);
+	font-size: 12.5px;
+	color: var(--text-dim);
+	padding: 13px 15px;
+}
+
+.toys label {
+	display: inline-flex;
+	align-items: center;
+	gap: 7px;
+	cursor: pointer;
+}
+
+@media (max-width: 640px) {
+	.byte { right: 10px; bottom: 10px; width: 48px; height: 48px; }
+	.byte-img { width: 48px; height: 48px; }
+	.byte-bubble { bottom: 52px; }
 }

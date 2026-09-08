@@ -10,7 +10,7 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" />
-	<link rel="stylesheet" href="./assets/style.css" />
+	<link rel="stylesheet" href="./assets/style.css?v=2" />
 	<link rel="icon" href="./assets/favicon.svg" type="image/svg+xml" />
 	<link rel="alternate" type="application/rss+xml" title="james-ccg - updates" href="./updates.xml" />
 
@@ -68,6 +68,7 @@
 				<a href="#projects">work</a>
 				<a href="#contact">elsewhere</a>
 				<a href="./cropper/">cropper</a>
+				<a href="./arcade/">arcade</a>
 				<div class="theme-switch" role="group" aria-label="Colour theme">
 					<button type="button" data-theme="auto" aria-pressed="true" title="Follow my system">AUTO</button>
 					<button type="button" data-theme="retro" aria-pressed="false" title="Retro dark">RETRO</button>
@@ -158,7 +159,7 @@
 			<div class="work-grid">
 				<article class="panel work">
 					<div class="work-body">
-						<div class="work-tag">LATEST &middot; STEAM</div>
+						<div class="work-tag work-tag-latest">LATEST &middot; STEAM</div>
 						<h3>Steam Artwork Creator &amp; Background Cropper</h3>
 						<p>
 							Cuts Featured, Artwork, Workshop and profile Background images &mdash;
@@ -241,15 +242,25 @@
 			<div class="sec-head"><span class="marker">&gt;</span><h2>my 88&times;31</h2></div>
 			<p class="sec-lede">Linking to me? Take the button.</p>
 			<div class="panel badge-row">
-				<img class="badge-art" src="./assets/badge.svg" alt="james-ccg button" width="88" height="31" />
+				<img class="badge-art" src="./assets/badge.svg" alt="James button" width="88" height="31" />
 				<div class="copybox">
-					<textarea id="badgeCode" readonly spellcheck="false"><a href="https://james-ccg.github.io/"><img src="https://james-ccg.github.io/assets/badge.svg" alt="james-ccg" width="88" height="31"></a></textarea>
+					<textarea id="badgeCode" readonly spellcheck="false"><a href="https://james-ccg.github.io/"><img src="https://james-ccg.github.io/assets/badge.svg" alt="James" width="88" height="31"></a></textarea>
 					<div class="copybox-actions">
 						<button class="copy-btn" type="button" id="copyBadge">COPY</button>
 						<span class="copy-note">SVG, so it stays crisp at any zoom.</span>
 					</div>
 				</div>
 			</div>
+		</section>
+
+		<!-- ============================ toys ============================ -->
+		<section class="sec shell" id="toys">
+			<div class="sec-head"><span class="marker">&gt;</span><h2>toys</h2></div>
+			<p class="sec-lede">
+				Byte lives in the corner. There is more of this in the
+				<a href="./arcade/">arcade</a>. All of it is remembered in your own browser.
+			</p>
+			<div class="panel toys" data-toys></div>
 		</section>
 
 		<!-- ============================ frens =========================== -->
@@ -277,5 +288,6 @@
 	</footer>
 
 	<script src="./assets/app.js"></script>
+	<script src="./assets/mascot.js"></script>
 </body>
 </html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="description" content="Byte the mascot, a daily sticker roll, and the switches for the site's toys. Everything is saved in your own browser." />
+	<meta name="theme-color" content="#14151c" />
+	<title>Arcade - James (xdjames)</title>
+
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" />
+	<link rel="stylesheet" href="../assets/style.css?v=2" />
+	<link rel="stylesheet" href="../assets/arcade.css" />
+	<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+	<link rel="alternate" type="application/rss+xml" title="james-ccg - updates" href="../updates.xml" />
+
+	<script>
+		(function () {
+			try {
+				var t = localStorage.getItem('jccg:theme');
+				if (t && t !== 'auto') document.documentElement.setAttribute('data-theme', t);
+			} catch (e) {}
+		})();
+	</script>
+</head>
+<body>
+	<!-- Gacha prizes, inlined once and referenced with <use>. -->
+	<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <symbol id="s-star" viewBox="0 0 12 12"><rect x="5" y="1" width="2" height="1" fill="#ffe066"/><rect x="4" y="2" width="4" height="1" fill="#ffe066"/><rect x="3" y="3" width="6" height="1" fill="#ffe066"/><rect x="0" y="4" width="12" height="1" fill="#ffe066"/><rect x="1" y="5" width="10" height="1" fill="#ffe066"/><rect x="2" y="6" width="8" height="1" fill="#ffe066"/><rect x="3" y="7" width="6" height="1" fill="#ffe066"/><rect x="2" y="8" width="3" height="1" fill="#ffe066"/><rect x="7" y="8" width="3" height="1" fill="#ffe066"/><rect x="1" y="9" width="2" height="1" fill="#ffe066"/><rect x="9" y="9" width="2" height="1" fill="#ffe066"/></symbol>
+  <symbol id="s-heart" viewBox="0 0 12 12"><rect x="1" y="1" width="2" height="1" fill="#ff6b6b"/><rect x="9" y="1" width="2" height="1" fill="#ff6b6b"/><rect x="0" y="2" width="4" height="1" fill="#ff6b6b"/><rect x="8" y="2" width="4" height="1" fill="#ff6b6b"/><rect x="0" y="3" width="6" height="1" fill="#ff6b6b"/><rect x="7" y="3" width="5" height="1" fill="#ff6b6b"/><rect x="0" y="4" width="12" height="1" fill="#ff6b6b"/><rect x="0" y="5" width="12" height="1" fill="#ff6b6b"/><rect x="1" y="6" width="10" height="1" fill="#ff6b6b"/><rect x="2" y="7" width="8" height="1" fill="#ff6b6b"/><rect x="3" y="8" width="6" height="1" fill="#ff6b6b"/><rect x="4" y="9" width="4" height="1" fill="#ff6b6b"/><rect x="5" y="10" width="2" height="1" fill="#ff6b6b"/></symbol>
+  <symbol id="s-coin" viewBox="0 0 12 12"><rect x="4" y="0" width="4" height="1" fill="#ffb454"/><rect x="2" y="1" width="8" height="1" fill="#ffb454"/><rect x="1" y="2" width="4" height="1" fill="#ffb454"/><rect x="5" y="2" width="2" height="1" fill="#ffffff"/><rect x="7" y="2" width="4" height="1" fill="#ffb454"/><rect x="0" y="3" width="5" height="1" fill="#ffb454"/><rect x="5" y="3" width="2" height="1" fill="#ffffff"/><rect x="7" y="3" width="5" height="1" fill="#ffb454"/><rect x="0" y="4" width="4" height="1" fill="#ffb454"/><rect x="4" y="4" width="4" height="1" fill="#ffffff"/><rect x="8" y="4" width="4" height="1" fill="#ffb454"/><rect x="0" y="5" width="5" height="1" fill="#ffb454"/><rect x="5" y="5" width="2" height="1" fill="#ffffff"/><rect x="7" y="5" width="5" height="1" fill="#ffb454"/><rect x="0" y="6" width="5" height="1" fill="#ffb454"/><rect x="5" y="6" width="2" height="1" fill="#ffffff"/><rect x="7" y="6" width="5" height="1" fill="#ffb454"/><rect x="1" y="7" width="4" height="1" fill="#ffb454"/><rect x="5" y="7" width="2" height="1" fill="#ffffff"/><rect x="7" y="7" width="4" height="1" fill="#ffb454"/><rect x="2" y="8" width="8" height="1" fill="#ffb454"/><rect x="4" y="9" width="4" height="1" fill="#ffb454"/></symbol>
+  <symbol id="s-floppy" viewBox="0 0 12 12"><rect x="0" y="0" width="12" height="1" fill="#14151c"/><rect x="0" y="1" width="1" height="1" fill="#14151c"/><rect x="1" y="1" width="10" height="1" fill="#ffffff"/><rect x="11" y="1" width="1" height="1" fill="#14151c"/><rect x="0" y="2" width="1" height="1" fill="#14151c"/><rect x="1" y="2" width="1" height="1" fill="#ffffff"/><rect x="2" y="2" width="8" height="1" fill="#14151c"/><rect x="10" y="2" width="1" height="1" fill="#ffffff"/><rect x="11" y="2" width="1" height="1" fill="#14151c"/><rect x="0" y="3" width="1" height="1" fill="#14151c"/><rect x="1" y="3" width="1" height="1" fill="#ffffff"/><rect x="2" y="3" width="1" height="1" fill="#14151c"/><rect x="3" y="3" width="6" height="1" fill="#8e93a8"/><rect x="9" y="3" width="1" height="1" fill="#14151c"/><rect x="10" y="3" width="1" height="1" fill="#ffffff"/><rect x="11" y="3" width="1" height="1" fill="#14151c"/><rect x="0" y="4" width="1" height="1" fill="#14151c"/><rect x="1" y="4" width="1" height="1" fill="#ffffff"/><rect x="2" y="4" width="1" height="1" fill="#14151c"/><rect x="3" y="4" width="6" height="1" fill="#8e93a8"/><rect x="9" y="4" width="1" height="1" fill="#14151c"/><rect x="10" y="4" width="1" height="1" fill="#ffffff"/><rect x="11" y="4" width="1" height="1" fill="#14151c"/><rect x="0" y="5" width="1" height="1" fill="#14151c"/><rect x="1" y="5" width="1" height="1" fill="#ffffff"/><rect x="2" y="5" width="8" height="1" fill="#14151c"/><rect x="10" y="5" width="1" height="1" fill="#ffffff"/><rect x="11" y="5" width="1" height="1" fill="#14151c"/><rect x="0" y="6" width="1" height="1" fill="#14151c"/><rect x="1" y="6" width="10" height="1" fill="#ffffff"/><rect x="11" y="6" width="1" height="1" fill="#14151c"/><rect x="0" y="7" width="1" height="1" fill="#14151c"/><rect x="1" y="7" width="2" height="1" fill="#ffffff"/><rect x="3" y="7" width="6" height="1" fill="#14151c"/><rect x="9" y="7" width="2" height="1" fill="#ffffff"/><rect x="11" y="7" width="1" height="1" fill="#14151c"/><rect x="0" y="8" width="1" height="1" fill="#14151c"/><rect x="1" y="8" width="2" height="1" fill="#ffffff"/><rect x="3" y="8" width="1" height="1" fill="#14151c"/><rect x="4" y="8" width="5" height="1" fill="#ffffff"/><rect x="9" y="8" width="1" height="1" fill="#14151c"/><rect x="10" y="8" width="1" height="1" fill="#ffffff"/><rect x="11" y="8" width="1" height="1" fill="#14151c"/><rect x="0" y="9" width="1" height="1" fill="#14151c"/><rect x="1" y="9" width="2" height="1" fill="#ffffff"/><rect x="3" y="9" width="1" height="1" fill="#14151c"/><rect x="4" y="9" width="5" height="1" fill="#ffffff"/><rect x="9" y="9" width="1" height="1" fill="#14151c"/><rect x="10" y="9" width="1" height="1" fill="#ffffff"/><rect x="11" y="9" width="1" height="1" fill="#14151c"/><rect x="0" y="10" width="1" height="1" fill="#14151c"/><rect x="1" y="10" width="2" height="1" fill="#ffffff"/><rect x="3" y="10" width="7" height="1" fill="#14151c"/><rect x="10" y="10" width="1" height="1" fill="#ffffff"/><rect x="11" y="10" width="1" height="1" fill="#14151c"/><rect x="0" y="11" width="12" height="1" fill="#14151c"/></symbol>
+  <symbol id="s-cassette" viewBox="0 0 12 12"><rect x="0" y="0" width="12" height="1" fill="#14151c"/><rect x="0" y="1" width="1" height="1" fill="#14151c"/><rect x="1" y="1" width="10" height="1" fill="#3b3f56"/><rect x="11" y="1" width="1" height="1" fill="#14151c"/><rect x="0" y="2" width="1" height="1" fill="#14151c"/><rect x="1" y="2" width="1" height="1" fill="#3b3f56"/><rect x="2" y="2" width="8" height="1" fill="#ffffff"/><rect x="10" y="2" width="1" height="1" fill="#3b3f56"/><rect x="11" y="2" width="1" height="1" fill="#14151c"/><rect x="0" y="3" width="1" height="1" fill="#14151c"/><rect x="1" y="3" width="1" height="1" fill="#3b3f56"/><rect x="2" y="3" width="1" height="1" fill="#ffffff"/><rect x="3" y="3" width="6" height="1" fill="#14151c"/><rect x="9" y="3" width="1" height="1" fill="#ffffff"/><rect x="10" y="3" width="1" height="1" fill="#3b3f56"/><rect x="11" y="3" width="1" height="1" fill="#14151c"/><rect x="0" y="4" width="1" height="1" fill="#14151c"/><rect x="1" y="4" width="1" height="1" fill="#3b3f56"/><rect x="2" y="4" width="1" height="1" fill="#ffffff"/><rect x="3" y="4" width="1" height="1" fill="#14151c"/><rect x="4" y="4" width="4" height="1" fill="#8e93a8"/><rect x="8" y="4" width="1" height="1" fill="#14151c"/><rect x="9" y="4" width="1" height="1" fill="#ffffff"/><rect x="10" y="4" width="1" height="1" fill="#3b3f56"/><rect x="11" y="4" width="1" height="1" fill="#14151c"/><rect x="0" y="5" width="1" height="1" fill="#14151c"/><rect x="1" y="5" width="1" height="1" fill="#3b3f56"/><rect x="2" y="5" width="1" height="1" fill="#ffffff"/><rect x="3" y="5" width="1" height="1" fill="#14151c"/><rect x="4" y="5" width="4" height="1" fill="#8e93a8"/><rect x="8" y="5" width="1" height="1" fill="#14151c"/><rect x="9" y="5" width="1" height="1" fill="#ffffff"/><rect x="10" y="5" width="1" height="1" fill="#3b3f56"/><rect x="11" y="5" width="1" height="1" fill="#14151c"/><rect x="0" y="6" width="1" height="1" fill="#14151c"/><rect x="1" y="6" width="1" height="1" fill="#3b3f56"/><rect x="2" y="6" width="1" height="1" fill="#ffffff"/><rect x="3" y="6" width="6" height="1" fill="#14151c"/><rect x="9" y="6" width="1" height="1" fill="#ffffff"/><rect x="10" y="6" width="1" height="1" fill="#3b3f56"/><rect x="11" y="6" width="1" height="1" fill="#14151c"/><rect x="0" y="7" width="1" height="1" fill="#14151c"/><rect x="1" y="7" width="1" height="1" fill="#3b3f56"/><rect x="2" y="7" width="8" height="1" fill="#ffffff"/><rect x="10" y="7" width="1" height="1" fill="#3b3f56"/><rect x="11" y="7" width="1" height="1" fill="#14151c"/><rect x="0" y="8" width="1" height="1" fill="#14151c"/><rect x="1" y="8" width="10" height="1" fill="#3b3f56"/><rect x="11" y="8" width="1" height="1" fill="#14151c"/><rect x="0" y="9" width="1" height="1" fill="#14151c"/><rect x="1" y="9" width="2" height="1" fill="#3b3f56"/><rect x="3" y="9" width="2" height="1" fill="#14151c"/><rect x="5" y="9" width="2" height="1" fill="#3b3f56"/><rect x="7" y="9" width="2" height="1" fill="#14151c"/><rect x="9" y="9" width="2" height="1" fill="#3b3f56"/><rect x="11" y="9" width="1" height="1" fill="#14151c"/><rect x="0" y="10" width="12" height="1" fill="#14151c"/></symbol>
+  <symbol id="s-gem" viewBox="0 0 12 12"><rect x="3" y="1" width="6" height="1" fill="#6db3f2"/><rect x="2" y="2" width="1" height="1" fill="#6db3f2"/><rect x="3" y="2" width="2" height="1" fill="#ffffff"/><rect x="5" y="2" width="5" height="1" fill="#6db3f2"/><rect x="1" y="3" width="2" height="1" fill="#6db3f2"/><rect x="3" y="3" width="1" height="1" fill="#ffffff"/><rect x="4" y="3" width="7" height="1" fill="#6db3f2"/><rect x="0" y="4" width="12" height="1" fill="#6db3f2"/><rect x="1" y="5" width="10" height="1" fill="#6db3f2"/><rect x="2" y="6" width="8" height="1" fill="#6db3f2"/><rect x="3" y="7" width="6" height="1" fill="#6db3f2"/><rect x="4" y="8" width="4" height="1" fill="#6db3f2"/><rect x="5" y="9" width="2" height="1" fill="#6db3f2"/></symbol>
+  <symbol id="s-ghost" viewBox="0 0 12 12"><rect x="4" y="0" width="4" height="1" fill="#ffffff"/><rect x="2" y="1" width="8" height="1" fill="#ffffff"/><rect x="1" y="2" width="10" height="1" fill="#ffffff"/><rect x="0" y="3" width="2" height="1" fill="#ffffff"/><rect x="2" y="3" width="2" height="1" fill="#14151c"/><rect x="4" y="3" width="4" height="1" fill="#ffffff"/><rect x="8" y="3" width="2" height="1" fill="#14151c"/><rect x="10" y="3" width="2" height="1" fill="#ffffff"/><rect x="0" y="4" width="2" height="1" fill="#ffffff"/><rect x="2" y="4" width="2" height="1" fill="#14151c"/><rect x="4" y="4" width="4" height="1" fill="#ffffff"/><rect x="8" y="4" width="2" height="1" fill="#14151c"/><rect x="10" y="4" width="2" height="1" fill="#ffffff"/><rect x="0" y="5" width="12" height="1" fill="#ffffff"/><rect x="0" y="6" width="12" height="1" fill="#ffffff"/><rect x="0" y="7" width="12" height="1" fill="#ffffff"/><rect x="0" y="8" width="12" height="1" fill="#ffffff"/><rect x="0" y="9" width="1" height="1" fill="#ffffff"/><rect x="2" y="9" width="2" height="1" fill="#ffffff"/><rect x="5" y="9" width="2" height="1" fill="#ffffff"/><rect x="8" y="9" width="2" height="1" fill="#ffffff"/><rect x="11" y="9" width="1" height="1" fill="#ffffff"/></symbol>
+  <symbol id="s-mushroom" viewBox="0 0 12 12"><rect x="3" y="0" width="6" height="1" fill="#ff6b6b"/><rect x="1" y="1" width="2" height="1" fill="#ff6b6b"/><rect x="3" y="1" width="2" height="1" fill="#ffffff"/><rect x="5" y="1" width="2" height="1" fill="#ff6b6b"/><rect x="7" y="1" width="2" height="1" fill="#ffffff"/><rect x="9" y="1" width="2" height="1" fill="#ff6b6b"/><rect x="0" y="2" width="3" height="1" fill="#ff6b6b"/><rect x="3" y="2" width="2" height="1" fill="#ffffff"/><rect x="5" y="2" width="2" height="1" fill="#ff6b6b"/><rect x="7" y="2" width="2" height="1" fill="#ffffff"/><rect x="9" y="2" width="3" height="1" fill="#ff6b6b"/><rect x="0" y="3" width="12" height="1" fill="#ff6b6b"/><rect x="0" y="4" width="12" height="1" fill="#ff6b6b"/><rect x="1" y="5" width="10" height="1" fill="#ff6b6b"/><rect x="3" y="6" width="6" height="1" fill="#ffffff"/><rect x="2" y="7" width="2" height="1" fill="#ffffff"/><rect x="4" y="7" width="1" height="1" fill="#14151c"/><rect x="5" y="7" width="2" height="1" fill="#ffffff"/><rect x="7" y="7" width="1" height="1" fill="#14151c"/><rect x="8" y="7" width="2" height="1" fill="#ffffff"/><rect x="2" y="8" width="8" height="1" fill="#ffffff"/><rect x="3" y="9" width="6" height="1" fill="#ffffff"/></symbol>
+  <symbol id="s-key" viewBox="0 0 12 12"><rect x="3" y="0" width="4" height="1" fill="#ffb454"/><rect x="2" y="1" width="1" height="1" fill="#ffb454"/><rect x="7" y="1" width="1" height="1" fill="#ffb454"/><rect x="1" y="2" width="1" height="1" fill="#ffb454"/><rect x="8" y="2" width="1" height="1" fill="#ffb454"/><rect x="1" y="3" width="1" height="1" fill="#ffb454"/><rect x="8" y="3" width="1" height="1" fill="#ffb454"/><rect x="2" y="4" width="1" height="1" fill="#ffb454"/><rect x="7" y="4" width="1" height="1" fill="#ffb454"/><rect x="3" y="5" width="4" height="1" fill="#ffb454"/><rect x="4" y="6" width="2" height="1" fill="#ffb454"/><rect x="4" y="7" width="2" height="1" fill="#ffb454"/><rect x="4" y="8" width="3" height="1" fill="#ffb454"/><rect x="4" y="9" width="2" height="1" fill="#ffb454"/><rect x="4" y="10" width="3" height="1" fill="#ffb454"/></symbol>
+  <symbol id="s-crown" viewBox="0 0 12 12"><rect x="0" y="1" width="1" height="1" fill="#c08bf5"/><rect x="5" y="1" width="1" height="1" fill="#c08bf5"/><rect x="10" y="1" width="1" height="1" fill="#c08bf5"/><rect x="0" y="2" width="2" height="1" fill="#c08bf5"/><rect x="4" y="2" width="3" height="1" fill="#c08bf5"/><rect x="9" y="2" width="2" height="1" fill="#c08bf5"/><rect x="0" y="3" width="3" height="1" fill="#c08bf5"/><rect x="4" y="3" width="3" height="1" fill="#c08bf5"/><rect x="8" y="3" width="3" height="1" fill="#c08bf5"/><rect x="0" y="4" width="12" height="1" fill="#c08bf5"/><rect x="0" y="5" width="3" height="1" fill="#c08bf5"/><rect x="3" y="5" width="1" height="1" fill="#ffe066"/><rect x="4" y="5" width="2" height="1" fill="#c08bf5"/><rect x="6" y="5" width="1" height="1" fill="#ffe066"/><rect x="7" y="5" width="4" height="1" fill="#c08bf5"/><rect x="0" y="6" width="12" height="1" fill="#c08bf5"/><rect x="1" y="7" width="10" height="1" fill="#c08bf5"/></symbol>
+</svg>
+	<header class="site">
+		<nav class="nav shell" aria-label="Main">
+			<a class="brand" href="../">james<span>-ccg</span></a>
+			<button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks">&#9776;</button>
+			<div class="nav-links" id="navLinks">
+				<a href="../#about">about</a>
+				<a href="../#projects">work</a>
+				<a href="../#contact">elsewhere</a>
+				<a href="../cropper/">cropper</a>
+				<a href="./" class="current">arcade</a>
+				<div class="theme-switch" role="group" aria-label="Colour theme">
+					<button type="button" data-theme="auto" aria-pressed="true" title="Follow my system">AUTO</button>
+					<button type="button" data-theme="retro" aria-pressed="false" title="Retro dark">RETRO</button>
+					<button type="button" data-theme="light" aria-pressed="false" title="Light">LIGHT</button>
+					<button type="button" data-theme="matrix" aria-pressed="false" title="Matrix">MTRX</button>
+				</div>
+			</div>
+		</nav>
+	</header>
+
+	<main class="shell">
+		<section class="sec">
+			<div class="sec-head"><span class="marker">&gt;</span><h2>arcade</h2></div>
+			<p class="sec-lede">
+				Byte lives here. So does a sticker machine. Everything on this page is kept
+				in your own browser &mdash; nothing is sent anywhere, and clearing your site
+				data resets it all.
+			</p>
+		</section>
+
+		<div class="arcade-grid">
+			<!-- ---------------------------- the pet ---------------------------- -->
+			<section class="panel pet" aria-labelledby="petTitle">
+				<h3 class="card-title" id="petTitle">byte</h3>
+				<div class="pet-stage">
+					<img class="pet-sprite" id="petSprite" src="../assets/mascot/idle.svg" width="16" height="16" alt="Byte" />
+					<div class="pet-speech" id="petSpeech" hidden></div>
+				</div>
+
+				<dl class="pet-stats">
+					<div><dt>fed</dt><dd><span class="meter"><i id="barFed"></i></span></dd></div>
+					<div><dt>happy</dt><dd><span class="meter"><i id="barHappy"></i></span></dd></div>
+					<div><dt>awake</dt><dd><span class="meter"><i id="barEnergy"></i></span></dd></div>
+				</dl>
+
+				<div class="pet-actions">
+					<button class="btn" type="button" id="petFeed">FEED</button>
+					<button class="btn" type="button" id="petPlay">PLAY</button>
+					<button class="btn" type="button" id="petRest">REST</button>
+				</div>
+				<p class="pet-note" id="petAge">&nbsp;</p>
+			</section>
+
+			<!-- --------------------------- the gacha --------------------------- -->
+			<section class="panel gacha" aria-labelledby="gachaTitle">
+				<h3 class="card-title" id="gachaTitle">sticker machine</h3>
+				<p class="card-lede">One roll a day. Rarer things are rarer.</p>
+
+				<div class="gacha-slot">
+					<svg class="gacha-prize" id="gachaPrize" viewBox="0 0 12 12" hidden aria-hidden="true"><use id="gachaUse" href=""/></svg>
+					<span class="gacha-empty" id="gachaEmpty">? ? ?</span>
+				</div>
+
+				<button class="btn btn-primary" type="button" id="gachaRoll">ROLL</button>
+				<p class="gacha-msg" id="gachaMsg">&nbsp;</p>
+
+				<h4 class="card-sub">collection <span id="gachaCount">0/10</span></h4>
+				<div class="gacha-shelf" id="gachaShelf"></div>
+			</section>
+
+			<!-- --------------------------- the switches ------------------------ -->
+			<section class="panel toys-card">
+				<h3 class="card-title">toys</h3>
+				<p class="card-lede">These apply across the whole site and are remembered.</p>
+				<div class="toys" data-toys></div>
+				<p class="card-lede">
+					The screensaver takes over after a couple of minutes with no input;
+					anything you do brings it back.
+				</p>
+			</section>
+		</div>
+	</main>
+
+	<footer class="site">
+		<div class="shell foot-grid">
+			<span>&copy; <span id="year"></span> James (xdjames)</span>
+			<span class="foot-links">
+				<a href="../">&#8592; back to the site</a>
+				<a href="../updates.xml">RSS</a>
+			</span>
+		</div>
+	</footer>
+
+	<script src="../assets/app.js"></script>
+	<script src="../assets/arcade.js"></script>
+	<script src="../assets/mascot.js"></script>
+</body>
+</html>
