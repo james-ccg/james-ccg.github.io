@@ -34,7 +34,7 @@ SRC_NAME = 'Puck_Render.webp'
 # into 96px leaves the head about 30px and each eye about 4px, which is too
 # small for a blink or a wink to register at all - the poses came out
 # indistinguishable from idle. Fractions of the trimmed subject box.
-HEAD_CROP = (0.26, 0.00, 0.665, 0.47)
+HEAD_CROP = (0.25, 0.00, 0.675, 0.52)
 
 
 def load_source(mascot_dir):
@@ -120,6 +120,27 @@ def pixelate(im, size, colors):
     out = rgb.convert('RGBA')
     out.putalpha(alpha)
     return out, clean
+
+
+def centre_on_face(im, eyes):
+    """Shift the sprite so the midpoint between the eyes is the centre.
+
+    Centring on the alpha box looked wrong and measured right: his left ear
+    stands up in a tall point while the right one folds down, so the box is
+    taller and wider on one side and its centre is not the face's centre. The
+    eyes are the only landmark that tracks where a viewer thinks the middle
+    is."""
+    if not eyes:
+        return im, 0
+    xs = [x for x, _ in eyes]
+    ys = [y for _, y in eyes]
+    face_x = (min(xs) + max(xs)) / 2
+    shift = round(im.width / 2 - face_x)
+    if not shift:
+        return im, 0
+    out = Image.new('RGBA', im.size, (0, 0, 0, 0))
+    out.paste(im, (shift, 0), im)
+    return out, shift
 
 
 def eye_pixels(im):
@@ -217,7 +238,10 @@ def main():
     src_px, dst_px = clean.load(), idle.load()
     for x, y in eyes:
         dst_px[x, y] = src_px[x, y]
-    print(f'found {len(eyes)} eye pixels; restored from the clean downsample')
+
+    idle, shift = centre_on_face(idle, eyes)
+    eyes = [(x + shift, y) for x, y in eyes]
+    print(f'found {len(eyes)} eye pixels; face centred by {shift:+d}px')
     poses = {
         'idle': idle,
         'blink': close_eyes(idle, eyes),

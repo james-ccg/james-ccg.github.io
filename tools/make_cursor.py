@@ -15,14 +15,14 @@ import urllib.parse
 N = 16
 
 ART = [
-    "..X....X.....X..",
-    "..X....X.....X..",
-    "..X....X.....X..",
-    "..X....X.....X..",
-    "..XX...X....XX..",
-    "...X...X....X...",
-    "...XXXXXXXXXX...",
-    "..XXXXXXXXXXXX..",
+    "..X..X..X..X....",
+    "..X..X..X..X....",
+    "..X..X..X..X..X.",
+    "..X..X..X..X..X.",
+    "..X..X..X..X..X.",
+    "..XX.X..X..X..X.",
+    "...X.X..X..X.XX.",
+    "...XXXXXXXXXXX..",
     "..XXXXXXXXXXXX..",
     "..XXXXXXXXXXX...",
     "...XXXXXXXXX....",

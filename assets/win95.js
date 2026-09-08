@@ -52,44 +52,71 @@
 	   Measure every box first, then place. */
 	function layout(wins) {
 		var deskBox = desk.getBoundingClientRect();
-		var pad = 14;
+		var pad = 12;
+		// The screen is 16:9. Not "at least" - taking the max of the packed
+		// height and the ratio meant a tall pack simply won and the desktop
+		// came out 1.2:1. The box is fixed first and the windows are fitted
+		// into it.
+		var targetH = Math.round((deskBox.width * 9) / 16);
+		desk.style.height = targetH + 'px';
+
 		var boxes = wins.map(function (w) {
 			var b = w.getBoundingClientRect();
 			return { w: b.width, h: b.height };
 		});
 
-		// Shelf packing with a slight stagger - a true cascade looks the part
-		// but buries every window under the last one.
-		var x = pad, y = pad, rowH = 0, placed = [];
-		boxes.forEach(function (b, i) {
-			if (x > pad && x + b.w > deskBox.width - pad) {
-				x = pad;
-				y += rowH + pad;
-				rowH = 0;
+		function pack(gap) {
+			var x = gap, y = gap, rowH = 0, out = [];
+			boxes.forEach(function (b) {
+				if (x > gap && x + b.w > deskBox.width - gap) {
+					x = gap;
+					y += rowH + gap;
+					rowH = 0;
+				}
+				out.push({ x: x, y: y });
+				x += b.w + gap;
+				rowH = Math.max(rowH, b.h);
+			});
+			return out;
+		}
+
+		function lowest(placed) {
+			return placed.reduce(function (m, p, i) {
+				return Math.max(m, p.y + boxes[i].h);
+			}, 0);
+		}
+
+		// Shelf-pack, tightening the gap before giving up on it.
+		var placed = null;
+		for (var gap = pad; gap >= 4; gap -= 4) {
+			var attempt = pack(gap);
+			if (lowest(attempt) <= targetH) {
+				placed = attempt;
+				break;
 			}
-			placed.push({ x: x + (i % 2 ? 10 : 0), y: y + (i % 3 === 1 ? 12 : 0) });
-			x += b.w + pad;
-			rowH = Math.max(rowH, b.h);
-		});
+			placed = attempt;
+		}
+
+		// Still too tall: cascade instead. Overlapping windows always fit,
+		// and a desktop is allowed to look like one.
+		if (lowest(placed) > targetH) {
+			placed = boxes.map(function (b, i) {
+				var perCol = Math.max(1, Math.floor((targetH - pad) / 34));
+				var col = Math.floor(i / perCol);
+				var row = i % perCol;
+				return {
+					x: Math.min(deskBox.width - 60, pad + col * 150 + row * 22),
+					y: Math.min(targetH - 30, pad + row * 34)
+				};
+			});
+		}
 
 		wins.forEach(function (w, i) {
 			w.style.width = boxes[i].w + 'px';
-			w.style.left = placed[i].x + 'px';
-			w.style.top = placed[i].y + 'px';
+			w.style.left = Math.round(placed[i].x) + 'px';
+			w.style.top = Math.round(placed[i].y) + 'px';
 			w.style.position = 'absolute';
 		});
-
-		// The desktop was sized by its content while the windows were in flow;
-		// once they are absolute it would collapse to nothing.
-		var lowest = placed.reduce(function (m, p, i) {
-			return Math.max(m, p.y + boxes[i].h);
-		}, 0);
-		// 16:9 like a monitor, driven from the measured width. Setting this
-		// with the CSS aspect-ratio property instead let the browser solve
-		// *width* from the height, so the desktop grew wider than the viewport
-		// and the windows ran off the left edge. Height only, explicitly.
-		desk.style.height =
-			Math.max(lowest + pad, Math.round((deskBox.width * 9) / 16)) + 'px';
 	}
 
 	function focus(win) {
