@@ -21,7 +21,7 @@
 	var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 	function prefs() {
-		var d = { sprite: true, cursor: false, saver: true };
+		var d = { sprite: true, cursor: 'off', saver: true };
 		try {
 			return Object.assign(d, JSON.parse(localStorage.getItem(KEY) || '{}'));
 		} catch (e) {
@@ -199,26 +199,40 @@
 	   toe, so what you click is where the pointer looks like it is. */
 	/* Subaru's Invisible Providence - the Unseen Hand. Hotspot on the top
 	   claw tip, so what you click is what it points at. */
-	var CURSOR = "url(\"data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2722%27%20height%3D%2722%27%20viewBox%3D%270%200%2024%2024%27%3E%3Cpath%20d%3D%27M3.5%202.2%20L3.5%2019.6%20L8.0%2015.4%20L10.9%2021.8%20L13.9%2020.4%20L11.1%2014.2%20L16.9%2014.0%20Z%27%20fill%3D%27%238b4fc9%27%20stroke%3D%27%23150a24%27%20stroke-width%3D%272.6%27%20stroke-linejoin%3D%27round%27%20paint-order%3D%27stroke%27%2F%3E%3Cpath%20d%3D%27M5.1%205.0%20L5.1%2015.6%27%20stroke%3D%27%23c79bf0%27%20stroke-width%3D%271.3%27%20stroke-linecap%3D%27round%27%20fill%3D%27none%27%2F%3E%3C%2Fsvg%3E\") 3 2, auto";
+	var CURSORS = {
+		arrow: 'url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2722%27%20height%3D%2722%27%20viewBox%3D%270%200%2024%2024%27%3E%3Cpath%20d%3D%27M3.5%202.2%20L3.5%2019.6%20L8.0%2015.4%20L10.9%2021.8%20L13.9%2020.4%20L11.1%2014.2%20L16.9%2014.0%20Z%27%20fill%3D%27%238b4fc9%27%20stroke%3D%27%23150a24%27%20stroke-width%3D%272.6%27%20stroke-linejoin%3D%27round%27%20paint-order%3D%27stroke%27%2F%3E%3Cpath%20d%3D%27M5.1%205.0%20L5.1%2015.6%27%20stroke%3D%27%23c79bf0%27%20stroke-width%3D%271.3%27%20stroke-linecap%3D%27round%27%20fill%3D%27none%27%2F%3E%3C%2Fsvg%3E") 3 2, auto',
+		hand: 'url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2722%27%20height%3D%2722%27%20viewBox%3D%270%200%2024%2024%27%3E%3Cg%20fill%3D%27%23150a24%27%3E%3Crect%20x%3D%276.70%27%20y%3D%270.60%27%20width%3D%277.10%27%20height%3D%2715.20%27%20rx%3D%273.55%27%2F%3E%3Crect%20x%3D%2711.00%27%20y%3D%276.60%27%20width%3D%276.70%27%20height%3D%279.70%27%20rx%3D%273.35%27%2F%3E%3Crect%20x%3D%2713.60%27%20y%3D%277.80%27%20width%3D%276.60%27%20height%3D%278.70%27%20rx%3D%273.30%27%2F%3E%3Crect%20x%3D%273.40%27%20y%3D%2711.40%27%20width%3D%276.50%27%20height%3D%278.80%27%20rx%3D%273.25%27%2F%3E%3Crect%20x%3D%274.80%27%20y%3D%2710.00%27%20width%3D%2715.20%27%20height%3D%2713.60%27%20rx%3D%275.20%27%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%27%238b4fc9%27%3E%3Crect%20x%3D%278.30%27%20y%3D%272.20%27%20width%3D%273.90%27%20height%3D%2712.00%27%20rx%3D%271.95%27%2F%3E%3Crect%20x%3D%2712.60%27%20y%3D%278.20%27%20width%3D%273.50%27%20height%3D%276.50%27%20rx%3D%271.75%27%2F%3E%3Crect%20x%3D%2715.20%27%20y%3D%279.40%27%20width%3D%273.40%27%20height%3D%275.50%27%20rx%3D%271.70%27%2F%3E%3Crect%20x%3D%275.00%27%20y%3D%2713.00%27%20width%3D%273.30%27%20height%3D%275.60%27%20rx%3D%271.65%27%2F%3E%3Crect%20x%3D%276.40%27%20y%3D%2711.60%27%20width%3D%2712.00%27%20height%3D%2710.40%27%20rx%3D%273.60%27%2F%3E%3C%2Fg%3E%3Crect%20x%3D%279.1%27%20y%3D%273.2%27%20width%3D%271.4%27%20height%3D%279%27%20rx%3D%270.7%27%20fill%3D%27%23c79bf0%27%2F%3E%3C%2Fsvg%3E") 9 2, auto',
+		pixel: 'url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2716%27%20height%3D%2724%27%20viewBox%3D%270%200%208%2012%27%20shape-rendering%3D%27crispEdges%27%3E%3Cg%20fill%3D%27%23150a24%27%3E%3Crect%20x%3D%271%27%20y%3D%270%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%272%27%20y%3D%271%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%273%27%20y%3D%272%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%274%27%20y%3D%273%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%275%27%20y%3D%274%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%276%27%20y%3D%275%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%277%27%20y%3D%276%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%275%27%20y%3D%278%27%20width%3D%273%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%272%27%20y%3D%279%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%275%27%20y%3D%279%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%271%27%20y%3D%2710%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%273%27%20y%3D%2710%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%276%27%20y%3D%2710%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%270%27%20y%3D%2711%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%274%27%20y%3D%2711%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%277%27%20y%3D%2711%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%27%238b4fc9%27%3E%3Crect%20x%3D%270%27%20y%3D%270%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%270%27%20y%3D%271%27%20width%3D%272%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%270%27%20y%3D%272%27%20width%3D%273%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%270%27%20y%3D%273%27%20width%3D%274%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%270%27%20y%3D%274%27%20width%3D%275%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%270%27%20y%3D%275%27%20width%3D%276%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%270%27%20y%3D%276%27%20width%3D%277%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%270%27%20y%3D%277%27%20width%3D%278%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%270%27%20y%3D%278%27%20width%3D%275%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%270%27%20y%3D%279%27%20width%3D%272%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%273%27%20y%3D%279%27%20width%3D%272%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%270%27%20y%3D%2710%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%274%27%20y%3D%2710%27%20width%3D%272%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%275%27%20y%3D%2711%27%20width%3D%272%27%20height%3D%271%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") 1 1, auto',
+	};
 
 	function applyCursor() {
-		document.documentElement.style.cursor = state.cursor ? CURSOR : '';
+		// An unknown or missing name falls back to the system cursor rather
+		// than to a broken url(), so a stale stored value cannot leave the
+		// page with no pointer at all.
+		var css = CURSORS[state.cursor];
+		document.documentElement.style.cursor = css || '';
 	}
 
 	/* ---------- the toy switches ------------------------------------- */
 	function buildControls() {
 		var box = document.querySelector('[data-toys]');
 		if (!box) return;
+		var options = Object.keys(CURSORS)
+			.map(function (name) {
+				return '<option value="' + name + '">' + name + '</option>';
+			})
+			.join('');
 		box.innerHTML =
 			'<label><input type="checkbox" data-toy="sprite" /> corner mascot</label>' +
-			'<label><input type="checkbox" data-toy="cursor" /> unseen hand</label>' +
-			'<label><input type="checkbox" data-toy="saver" /> idle screensaver</label>';
+			'<label><input type="checkbox" data-toy="saver" /> idle screensaver</label>' +
+			'<label class="toy-select">cursor ' +
+			'<select data-cursor><option value="off">off</option>' + options + '</select></label>';
+
 		box.querySelectorAll('input[data-toy]').forEach(function (input) {
 			input.checked = !!state[input.dataset.toy];
 			input.addEventListener('change', function () {
 				state[input.dataset.toy] = input.checked;
 				savePrefs(state);
-				if (input.dataset.toy === 'cursor') applyCursor();
 				if (input.dataset.toy === 'sprite') {
 					if (input.checked && !el) {
 						buildSprite();
@@ -231,6 +245,16 @@
 				if (input.dataset.toy === 'saver' && !input.checked && saver) saver.hide();
 			});
 		});
+
+		var picker = box.querySelector('select[data-cursor]');
+		if (picker) {
+			picker.value = CURSORS[state.cursor] ? state.cursor : 'off';
+			picker.addEventListener('change', function () {
+				state.cursor = picker.value;
+				savePrefs(state);
+				applyCursor();
+			});
+		}
 	}
 
 	/* ---------- go ---------------------------------------------------- */

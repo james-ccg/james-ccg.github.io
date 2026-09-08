@@ -963,3 +963,19 @@ footer.site {
 	.byte-img { width: 48px; height: 48px; }
 	.byte-bubble { bottom: 52px; }
 }
+
+/* the cursor picker sits in the toy row alongside the checkboxes */
+.toys .toy-select {
+	gap: 8px;
+}
+
+.toys select {
+	font-family: var(--font-mono);
+	font-size: 12px;
+	background: var(--bg-tint);
+	color: var(--text);
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	padding: 3px 6px;
+	cursor: pointer;
+}
