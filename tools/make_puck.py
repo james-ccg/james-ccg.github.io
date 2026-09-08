@@ -245,9 +245,12 @@ def main():
     for x, y in eyes:
         dst_px[x, y] = src_px[x, y]
 
-    idle, shift = centre_on_face(idle, eyes)
-    eyes = [(x + shift, y) for x, y in eyes]
-    print(f'found {len(eyes)} eye pixels; face centred by {shift:+d}px')
+    # Centre the silhouette, not the face. Shifting to put the midpoint of
+    # the eyes on the frame centre is defensible in theory and looked wrong in
+    # practice: his left ear is taller and wider, so the shift left a visibly
+    # bigger gap down one side of the frame. fit_square already centres the
+    # trimmed content, and with a margin in place the head reads as centred.
+    print(f'found {len(eyes)} eye pixels')
     poses = {
         'idle': idle,
         'blink': close_eyes(idle, eyes),

@@ -52,10 +52,10 @@
 	   Measure every box first, then place. */
 	function layout(wins) {
 		var deskBox = desk.getBoundingClientRect();
-		var pad = 12;
-		// The screen is 16:9, derived from the measured width. Setting the
-		// ratio in CSS instead let the browser solve width from height, and a
-		// tall stack pushed the desktop wider than the viewport.
+		var pad = 10;
+		// 16:9, derived from the measured width. Setting the ratio in CSS let
+		// the browser solve width from height instead, and a tall stack pushed
+		// the desktop wider than the viewport.
 		var targetH = Math.round((deskBox.width * 9) / 16);
 		desk.style.height = targetH + 'px';
 
@@ -64,36 +64,43 @@
 			return { w: b.width, h: b.height };
 		});
 
-		/* Windows arrive overlapping, the way a desktop you have actually been
-		   using looks. The step is 30px so every title bar below the top one
-		   stays visible and clickable - a cascade that hides them is just a
-		   pile. Columns wrap before the stack would run off the bottom. */
-		var step = 30;
-		var perCol = Math.max(1, Math.floor((targetH - pad * 2 - 90) / step) + 1);
-		var colW = 0;
-		var placed = [];
-		var colX = pad;
-		boxes.forEach(function (b, i) {
-			var row = i % perCol;
-			if (row === 0 && i > 0) {
-				colX += colW + step;
-				colW = 0;
-			}
-			colW = Math.max(colW, b.w * 0.35);
-			var x = colX + row * step;
-			var y = pad + row * step;
-			// Never let a window start so far right or low that its title bar
-			// is off the screen.
-			placed.push({
-				x: Math.max(0, Math.min(x, deskBox.width - 90)),
-				y: Math.max(0, Math.min(y, targetH - 28))
+		/* Spread across the whole screen with only a little overlap. A strict
+		   cascade stacks every window on one diagonal, which wastes most of the
+		   desktop and buries the text - so this shelf-packs across the width,
+		   then pulls each row up by `lap` so rows just touch, and nudges
+		   alternate windows sideways so no two title bars line up exactly. */
+		function place(gap, lap) {
+			var x = pad, y = pad, rowH = 0, row = 0, out = [];
+			boxes.forEach(function (b, i) {
+				if (x > pad && x + b.w > deskBox.width - pad) {
+					x = pad;
+					y += rowH - lap;
+					rowH = 0;
+					row += 1;
+				}
+				out.push({ x: x + (row % 2 ? 16 : 0), y: y + (i % 2 ? 10 : 0) });
+				x += b.w + gap;
+				rowH = Math.max(rowH, b.h);
 			});
-		});
+			return out;
+		}
+
+		function lowest(p) {
+			return p.reduce(function (m, q, i) {
+				return Math.max(m, q.y + boxes[i].h);
+			}, 0);
+		}
+
+		// Overlap only as much as it takes to fit; start barely overlapping.
+		var placed = place(pad, 0);
+		for (var lap = 0; lap <= 70 && lowest(placed) > targetH; lap += 10) {
+			placed = place(pad, lap);
+		}
 
 		wins.forEach(function (w, i) {
 			w.style.width = boxes[i].w + 'px';
-			w.style.left = Math.round(placed[i].x) + 'px';
-			w.style.top = Math.round(placed[i].y) + 'px';
+			w.style.left = Math.round(Math.max(0, Math.min(placed[i].x, deskBox.width - 100))) + 'px';
+			w.style.top = Math.round(Math.max(0, Math.min(placed[i].y, targetH - 26))) + 'px';
 			w.style.position = 'absolute';
 		});
 	}

@@ -1,5 +1,18 @@
 #!/usr/bin/env python3
-"""Regenerates the cursor in assets/mascot.js - Subaru's Invisible Providence.
+"""Regenerates the cursor in assets/mascot.js - a pointing hand, tinted.
+
+The shape is the conventional pointing-hand pointer: index finger up, three
+fingers folded, thumb at the side, fist below. That silhouette is decades old
+and universally read as "clickable", which is the whole job of a cursor - my
+earlier attempts invented a clawed shape and it read as a purple blob.
+
+Drawn here rather than lifted from a cursor theme. Bibata and the other
+popular open-source sets are GPL-3.0, and vendoring their artwork into a
+personal site would carry the licence with it for no gain, since the shape
+itself is a convention nobody owns.
+
+The colour is Subaru's Invisible Providence - the Authority of Sloth, drawn in
+the anime as a dark violet shadow-hand.
 
 The Unseen Hand: the Authority of Sloth, drawn in the anime as a dark violet
 shadow-hand. Fingers are deliberately long. A first pass gave them four rows
@@ -15,27 +28,27 @@ import urllib.parse
 N = 16
 
 ART = [
-    "..X..X..X..X....",
-    "..X..X..X..X....",
-    "..X..X..X..X..X.",
-    "..X..X..X..X..X.",
-    "..X..X..X..X..X.",
-    "..XX.X..X..X..X.",
-    "...X.X..X..X.XX.",
-    "...XXXXXXXXXXX..",
-    "..XXXXXXXXXXXX..",
+    ".....XX.........",
+    ".....XX.........",
+    ".....XX.........",
+    ".....XX.........",
+    ".....XX.........",
+    ".....XX.XX......",
+    ".....XXXXXX.X...",
+    ".....XXXXXXXX...",
+    "..XX.XXXXXXXX...",
     "..XXXXXXXXXXX...",
-    "...XXXXXXXXX....",
-    "....XXXXXXX.....",
-    ".....XXXXX......",
-    "......XXX.......",
-    "................",
-    "................",
+    "...XXXXXXXXXX...",
+    "...XXXXXXXXXX...",
+    "...XXXXXXXXXX...",
+    "...XXXXXXXXXX...",
+    "....XXXXXXXX....",
+    ".....XXXXXX.....",
 ]
 
 GLOW, EDGE = '#d9b8ff', '#150a24'
 # The hand darkens toward the wrist.
-SHADES = [(5, '#a05fe0'), (10, '#7b3fb5'), (N, '#4a2472')]
+SHADES = [(6, '#b07ae8'), (10, '#8b4fc9'), (N, '#5a2f8a')]
 
 
 def build():
@@ -93,8 +106,8 @@ def main():
     s = io.open(p, encoding='utf-8').read()
     i = s.index('\tvar CURSOR = "url(')
     j = s.index('\n', i)
-    # Hotspot on the top-left claw tip, where a pointer's point belongs.
-    s = s[:i] + f'\tvar CURSOR = "url(\\"data:image/svg+xml,{enc}\\") 2 0, auto";' + s[j:]
+    # Hotspot on the top-left fingertip, which is where a pointing hand points.
+    s = s[:i] + f'\tvar CURSOR = "url(\\"data:image/svg+xml,{enc}\\") 5 0, auto";' + s[j:]
     io.open(p, 'w', encoding='utf-8', newline='\n').write(s)
     print('patched assets/mascot.js')
     preview = os.environ.get('CURSOR_PREVIEW')
