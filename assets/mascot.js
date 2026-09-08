@@ -216,23 +216,31 @@
 	   <html>. A cursor set is about every role - links, text fields, the
 	   draggable title bars, disabled buttons - and only a rule per selector
 	   can reach those. Removing the element restores the system cursors
-	   exactly, with nothing left behind on elements. */
+	   exactly, with nothing left behind on elements.
+
+	   Every rule is !important, which is the right call exactly once: this is
+	   a global override the visitor switched on, and it has to beat whatever
+	   the page already said. It had to - `.btn:disabled { cursor: default }`
+	   in arcade.css scores (0,2,0) against this sheet's `html :disabled` at
+	   (0,1,1), so the gacha button kept the plain arrow during its cooldown
+	   instead of showing not-allowed. Raising specificity selector by selector
+	   would mean guessing every page rule that might ever compete. */
 	var cursorSheet = null;
 
 	function cursorCss() {
 		var c = CURSORS;
 		return [
-			'html, html *{cursor:' + c.default + '}',
+			'html, html *{cursor:' + c.default + ' !important}',
 			'html a,html button,html select,html summary,html label,html [role="button"],',
-			'html .b88,html .modeBtn,html .btn,html .formatBtn{cursor:' + c.pointer + '}',
+			'html .b88,html .modeBtn,html .btn,html .formatBtn{cursor:' + c.pointer + ' !important}',
 			'html input[type="text"],html input[type="email"],html input[type="url"],',
-			'html input[type="number"],html textarea{cursor:' + c.text + '}',
-			'html .title-bar{cursor:' + c.move + '}',
-			'html .title-bar:active{cursor:' + c.grab + '}',
-			'html :disabled,html [aria-disabled="true"]{cursor:' + c['not-allowed'] + '}',
-			'html progress,html .meter{cursor:' + c.wait + '}',
-			'html .work-shot,html .shrine-gallery a{cursor:' + c.crosshair + '}',
-			'html [data-desktop]{cursor:' + c.default + '}',
+			'html input[type="number"],html textarea{cursor:' + c.text + ' !important}',
+			'html .title-bar{cursor:' + c.move + ' !important}',
+			'html .title-bar:active{cursor:' + c.grab + ' !important}',
+			'html :disabled,html [aria-disabled="true"]{cursor:' + c['not-allowed'] + ' !important}',
+			'html progress,html .meter{cursor:' + c.wait + ' !important}',
+			'html .work-shot,html .shrine-gallery a{cursor:' + c.crosshair + ' !important}',
+			'html [data-desktop]{cursor:' + c.default + ' !important}',
 		].join(' ');
 	}
 
