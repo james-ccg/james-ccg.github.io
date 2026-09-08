@@ -617,14 +617,21 @@ header.site {
 }
 
 .b88 .b88-mark {
-	width: 30px;
+	width: 31px;
 	display: grid;
 	place-items: center;
-	font-family: var(--font-pixel);
-	font-size: 12px;
-	color: #fff;
+	color: var(--ink, #fff);
 	background: var(--mark, #444);
 	flex: none;
+}
+
+/* The mark block carries the service's own logo. currentColor lets a light
+   brand block (Buy Me a Coffee's yellow) flip the glyph dark via --ink
+   without a second rule per button. */
+.b88-ico {
+	width: 17px;
+	height: 17px;
+	fill: currentColor;
 }
 
 .b88 .b88-text {
