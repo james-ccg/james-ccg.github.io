@@ -394,3 +394,58 @@ body.is-dragging {
 
 .rbd-msg.rbd-bad { color: #a00; }
 .rbd-msg.rbd-win { color: #060; font-weight: 700; }
+
+/* ---- inside the screen, nothing themes ------------------------------
+   Everything from .desktop inward is Windows 98 and stays Windows 98: the
+   switcher changes the page around the screen, never the screen itself.
+
+   This also fixes unreadable window text. The chrome-restoration block above
+   sets `body { color: var(--text) }`, which is near-white on the dark themes,
+   and 98.css never sets a colour on .window-body - so the text inherited
+   white and sat on silver. Colours in here are literal on purpose; a token
+   would reintroduce exactly that bug. */
+.desktop,
+.taskbar {
+	border-color: #2a2f3d;
+}
+
+.desktop .window,
+.desktop .window-body,
+.desktop .title-bar,
+.taskbar {
+	color: #222;
+	font-family: 'Pixelated MS Sans Serif', Arial, sans-serif;
+	font-size: 11px;
+}
+
+.desktop .window-body p,
+.desktop .window-body h3,
+.desktop .window-body li,
+.desktop .window-body td,
+.desktop .window-body th,
+.desktop .window-body label,
+.desktop .window-body span {
+	color: #222;
+}
+
+.desktop .title-bar-text {
+	color: #fff;
+}
+
+.desktop .window-body a {
+	color: #00f;
+}
+
+.desktop .window-body b,
+.desktop .window-body strong {
+	color: #000;
+}
+
+.rbd-status { color: #444; }
+.rbd-msg.rbd-bad { color: #a00; }
+.rbd-msg.rbd-win { color: #060; }
+.rbd-doors button.rbd-dead { color: #a00; }
+
+.desk-empty {
+	color: #eaf7f7;
+}

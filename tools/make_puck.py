@@ -39,7 +39,7 @@ SRC_NAME = 'Puck_Render.webp'
 # out further than it looks - and his chin bottoms out at y .44. Earlier crops
 # crept inward and clipped the left ear, and reached past .44 into the neck
 # ruff, which pulled the face off-centre in the frame.
-HEAD_CROP = (0.17, 0.00, 0.68, 0.44)
+HEAD_CROP = (0.17, 0.00, 0.68, 0.40)
 
 
 def load_source(mascot_dir):
