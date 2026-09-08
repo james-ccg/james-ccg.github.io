@@ -13,6 +13,10 @@ that difference is most of what separates a good web button from a bad one.
 """
 import io
 import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import make_puck  # noqa: E402  - the badge reuses the mascot's own pixels
 
 GLYPH_W, GLYPH_H, TRACK = 4, 7, 1
 
@@ -59,12 +63,33 @@ DEFS = f'''<defs>
 	</defs>'''
 
 
+def puck_head(dx, dy, crop=(2, 1, 30, 24)):
+    """Puck's head lifted straight out of the 32x32 mascot at 1:1.
+
+    Rescaling pixel art by a non-integer factor destroys it, so the badge
+    borrows the sprite's actual pixels and crops rather than resizing."""
+    g = make_puck.build('idle')
+    x0, y0, x1, y1 = crop
+    rects = []
+    for y in range(y0, y1):
+        x = x0
+        while x < x1:
+            ch, run = g[y][x], 1
+            while x + run < x1 and g[y][x + run] == ch:
+                run += 1
+            if ch in make_puck.C:
+                rects.append(
+                    f'<rect x="{dx + x - x0}" y="{dy + y - y0}" width="{run}"'
+                    f' height="1" fill="{make_puck.C[ch]}"/>'
+                )
+            x += run
+    return '<g>' + ''.join(rects) + '</g>'
+
+
 def build_badge():
     """88x31 with a square 31x31 mark block, so the logo is a square."""
     mark_w, scale = 31, 2
-    # Big J centred in the square block.
-    jw, jh = GLYPH_W * 4, GLYPH_H * 4
-    mark, _ = word('J', (mark_w - jw) // 2 + 2, (31 - jh) // 2, 4, INK)
+    mark = puck_head(1, 4)
     # Wordmark centred in the remaining 57px.
     probe, w = word('JAMES', 0, 0, scale, TEXT)
     text_x = mark_w + (88 - mark_w - w) // 2
@@ -87,15 +112,13 @@ def build_badge():
 
 def build_favicon():
     """A tab icon needs its own square mark - the 88x31 badge was being
-    squashed into a smear at 16px."""
-    jw, jh = GLYPH_W * 6, GLYPH_H * 6
-    mark, _ = word('J', (64 - jw) // 2 + 3, (64 - jh) // 2, 6, INK)
-    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" shape-rendering="crispEdges" role="img" aria-label="James">
+    squashed into a smear at 16px. Drawn on the 32-grid and scaled by exactly
+    2, which is the one resize that keeps pixel art intact."""
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 32 32" shape-rendering="crispEdges" role="img" aria-label="James">
 	{DEFS}
-	<rect width="64" height="64" rx="10" fill="url(#bg)"/>
-	<rect x="5" y="5" width="54" height="54" rx="6" fill="url(#am)"/>
-	{mark}
-	<rect x="5" y="5" width="54" height="2" rx="1" fill="#fff" fill-opacity="0.3"/>
+	<rect width="32" height="32" rx="5" fill="url(#bg)"/>
+	<rect x="2" y="2" width="28" height="28" rx="3" fill="url(#am)"/>
+	{puck_head(3, 4, (3, 1, 29, 25))}
 </svg>
 '''
 

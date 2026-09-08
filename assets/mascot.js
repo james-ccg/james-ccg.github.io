@@ -1,5 +1,5 @@
 /* =====================================================================
-   Byte - the site mascot layer.
+   Puck - the site mascot layer.
 
    Adds a corner sprite that idles, blinks, waves and falls asleep, plus an
    idle screensaver and an optional pixel cursor. Everything here is opt-out
@@ -61,7 +61,7 @@
 		'built in a browser tab',
 		'try the cropper',
 		'zzz...',
-		'i am byte',
+		'i am puck',
 		'nothing is uploaded',
 	];
 
@@ -70,8 +70,8 @@
 		el.className = 'byte';
 		el.innerHTML =
 			'<div class="byte-bubble" hidden></div>' +
-			'<img class="byte-img" width="16" height="16" alt="Byte, the site mascot" />' +
-			'<button class="byte-hide" type="button" title="Hide Byte" aria-label="Hide Byte">x</button>';
+			'<img class="byte-img" width="16" height="16" alt="Puck, the site mascot" />' +
+			'<button class="byte-hide" type="button" title="Hide Puck" aria-label="Hide Puck">x</button>';
 		document.body.appendChild(el);
 		img = el.querySelector('.byte-img');
 		bubble = el.querySelector('.byte-bubble');
@@ -116,7 +116,7 @@
 		saver.className = 'saver';
 		saver.innerHTML =
 			'<canvas class="saver-canvas"></canvas>' +
-			'<div class="saver-tag">byte is asleep &mdash; move to wake</div>';
+			'<div class="saver-tag">puck is asleep &mdash; move to wake</div>';
 		document.body.appendChild(saver);
 
 		var canvas = saver.querySelector('.saver-canvas');
@@ -189,8 +189,15 @@
 	}
 
 	/* ---------- pixel cursor ----------------------------------------- */
-	var CURSOR =
-		"url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 12 12' shape-rendering='crispEdges'%3E%3Cpath d='M1 0h1v1h1v1h1v1h1v1h1v1h1v1h1v1h1v1h1v1H9v-1H8v1H7v1H6v1H5V9H4V8H3V7H2V6H1V0z' fill='%2314151c'/%3E%3Cpath d='M2 1h1v1h1v1h1v1h1v1h1v1h1v1h1v1H7v1H6v1H5V8H4V7H3V6H2V1z' fill='%23ffb454'/%3E%3C/svg%3E\") 0 0, auto";
+	/* Puck's paw, drawn on a 12-grid and served at 24px. The hotspot sits
+	   at the top-left toe rather than the centre, so the thing you click is
+	   where the pointer looks like it is. */
+	/* Puck's paw. Four toe beans over a main pad - the shape a paw print
+	   actually makes; squared-off toes read as a blob at 24px. The dark
+	   edge is the same 1px outline pass the sprite uses, so the cursor
+	   stays visible over both light and dark pages. Hotspot is the top-left
+	   toe, so what you click is where the pointer looks like it is. */
+	var CURSOR = "url(\"data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2724%27%20height%3D%2724%27%20viewBox%3D%270%200%2012%2012%27%20shape-rendering%3D%27crispEdges%27%3E%3Cg%20fill%3D%27%23232838%27%3E%3Crect%20x%3D%272%27%20y%3D%270%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%275%27%20y%3D%270%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%278%27%20y%3D%270%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%2711%27%20y%3D%270%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%272%27%20y%3D%271%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%275%27%20y%3D%271%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%278%27%20y%3D%271%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%2711%27%20y%3D%271%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%270%27%20y%3D%272%27%20width%3D%272%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%2710%27%20y%3D%272%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%270%27%20y%3D%273%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%2711%27%20y%3D%273%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%270%27%20y%3D%276%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%2711%27%20y%3D%276%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%271%27%20y%3D%277%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%2710%27%20y%3D%277%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%272%27%20y%3D%278%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%279%27%20y%3D%278%27%20width%3D%271%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%273%27%20y%3D%279%27%20width%3D%276%27%20height%3D%271%27%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%27%23f6a8bd%27%3E%3Crect%20x%3D%270%27%20y%3D%270%27%20width%3D%272%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%273%27%20y%3D%270%27%20width%3D%272%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%276%27%20y%3D%270%27%20width%3D%272%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%279%27%20y%3D%270%27%20width%3D%272%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%270%27%20y%3D%271%27%20width%3D%272%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%273%27%20y%3D%271%27%20width%3D%272%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%276%27%20y%3D%271%27%20width%3D%272%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%279%27%20y%3D%271%27%20width%3D%272%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%272%27%20y%3D%272%27%20width%3D%278%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%271%27%20y%3D%273%27%20width%3D%2710%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%270%27%20y%3D%274%27%20width%3D%2712%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%270%27%20y%3D%275%27%20width%3D%2712%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%271%27%20y%3D%276%27%20width%3D%2710%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%272%27%20y%3D%277%27%20width%3D%278%27%20height%3D%271%27%2F%3E%3Crect%20x%3D%273%27%20y%3D%278%27%20width%3D%276%27%20height%3D%271%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E\") 1 0, auto";
 
 	function applyCursor() {
 		document.documentElement.style.cursor = state.cursor ? CURSOR : '';

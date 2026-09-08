@@ -123,7 +123,7 @@
 
 		sprite.addEventListener('click', function () {
 			bump(sprite);
-			say(['hi', ':3', 'hello', 'byte'][Math.floor(Math.random() * 4)]);
+			say(['hi', ':3', 'hello', 'puck'][Math.floor(Math.random() * 4)]);
 		});
 
 		render();
