@@ -46,9 +46,9 @@ ART = [
     ".....XXXXXX.....",
 ]
 
-GLOW, EDGE = '#d9b8ff', '#150a24'
+GLOW, EDGE = '#d9b8ff', '#1d1030'
 # The hand darkens toward the wrist.
-SHADES = [(6, '#b07ae8'), (10, '#8b4fc9'), (N, '#5a2f8a')]
+SHADES = [(6, '#c79bf0'), (10, '#9d5fd6'), (N, '#6b3aa0')]
 
 
 def build():
@@ -64,10 +64,10 @@ def build():
     # theme and the dark one.
     dark = {(x, y) for y in range(N) for x in range(N)
             if g[y][x] == '.' and any(solid(x + dx, y + dy) for dx, dy in nbr)}
-    glow = {(x, y) for y in range(N) for x in range(N)
-            if g[y][x] == '.' and (x, y) not in dark
-            and any((x + dx, y + dy) in dark for dx, dy in nbr)}
-    return g, dark, glow
+    # One outline only. A second, lighter ring outside it doubled the
+    # apparent weight of every edge and the hand came out looking like a
+    # chunky sticker rather than a pointer.
+    return g, dark, set()
 
 
 def runs(pred, fill):
@@ -93,7 +93,7 @@ def svg():
     for y in range(N):
         fill = next(c for limit, c in SHADES if y < limit)
         parts.append(runs(lambda x, yy=y: g[yy][x] == 'X' and yy == y, fill))
-    return ("<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' "
+    return ("<svg xmlns='http://www.w3.org/2000/svg' width='18' height='18' "
             f"viewBox='0 0 {N} {N}' shape-rendering='crispEdges'>"
             + ''.join(parts) + '</svg>')
 

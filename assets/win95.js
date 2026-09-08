@@ -78,7 +78,7 @@
 					rowH = 0;
 					row += 1;
 				}
-				out.push({ x: x + (row % 2 ? 16 : 0), y: y + (i % 2 ? 10 : 0) });
+				out.push({ x: x + (row % 2 ? 14 : 0), y: y + (i % 2 ? 8 : 0) });
 				x += b.w + gap;
 				rowH = Math.max(rowH, b.h);
 			});
@@ -183,12 +183,17 @@
 	var wins = Array.prototype.slice.call(desk.querySelectorAll('.window'));
 	layout(wins);
 
+	/* Stacking follows authoring order, highest first. The default was the
+	   reverse - later windows on top - which buried who.txt and why_him.txt,
+	   the two that carry the actual writing, under everything that came after
+	   them in the markup. Clicking still raises whatever you touch. */
+	z = 10 + wins.length;
 	wins.forEach(function (win, i) {
 		if (!win.id) win.id = 'win' + i;
 		var bar = win.querySelector('.title-bar');
 		var label = (win.querySelector('.title-bar-text') || {}).textContent || 'Window';
 
-		win.style.zIndex = ++z;
+		win.style.zIndex = 10 + wins.length - i;
 		win.addEventListener('mousedown', function () {
 			focus(win);
 		});

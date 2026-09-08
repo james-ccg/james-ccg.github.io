@@ -137,7 +137,7 @@ header.site .nav-links a.current {
    a cascade, which fits by overlapping - and buries every window under the
    last one. */
 .desktop .window-body {
-	max-height: 210px;
+	max-height: 118px;
 	overflow-y: auto;
 }
 

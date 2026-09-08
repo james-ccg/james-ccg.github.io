@@ -30,11 +30,16 @@ SPRITE = 96
 PALETTE_COLORS = 40
 SRC_NAME = 'Puck_Render.webp'
 
-# The sprite is a head crop, not the whole cat. Fitting the full sitting pose
-# into 96px leaves the head about 30px and each eye about 4px, which is too
-# small for a blink or a wink to register at all - the poses came out
-# indistinguishable from idle. Fractions of the trimmed subject box.
-HEAD_CROP = (0.25, 0.00, 0.675, 0.52)
+# The sprite is a head crop, not the whole cat: fitting the full sitting pose
+# into 96px leaves the head at 30px and each eye at 4px, too small for a blink
+# to register at all.
+#
+# These numbers are read off the source with a tenths grid rather than guessed.
+# On the trimmed subject his ear tips span x .17 to .68 - the left ear leans
+# out further than it looks - and his chin bottoms out at y .44. Earlier crops
+# crept inward and clipped the left ear, and reached past .44 into the neck
+# ruff, which pulled the face off-centre in the frame.
+HEAD_CROP = (0.17, 0.00, 0.68, 0.44)
 
 
 def load_source(mascot_dir):
