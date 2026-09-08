@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+	<channel>
+		<title>james-ccg - updates</title>
+		<link>https://james-ccg.github.io/</link>
+		<description>Changes to the tools and the site. Small, occasional, and written by hand.</description>
+		<language>en</language>
+		<atom:link href="https://james-ccg.github.io/updates.xml" rel="self" type="application/rss+xml" />
+
+		<item>
+			<title>The homepage is a place now, not a CV</title>
+			<link>https://james-ccg.github.io/</link>
+			<guid isPermaLink="false">jccg-2026-09-08-homepage</guid>
+			<pubDate>Tue, 08 Sep 2026 18:00:00 +0000</pubDate>
+			<description><![CDATA[
+				Rebuilt the front page: a proper identity block, tools shown with real
+				screenshots, every link as an 88x31 button, a theme switcher, and a
+				button of my own you can take.
+			]]></description>
+		</item>
+
+		<item>
+			<title>Background Cropper: a Workshop Showcase is five slots, not one</title>
+			<link>https://james-ccg.github.io/cropper/</link>
+			<guid isPermaLink="false">jccg-2026-09-05-workshop-slots</guid>
+			<pubDate>Sat, 05 Sep 2026 12:00:00 +0000</pubDate>
+			<description><![CDATA[
+				Slicing a background for a Workshop Showcase now cuts all five slots at
+				their real positions instead of one wide piece, and the showcase
+				geometry was re-measured against a live Steam profile.
+			]]></description>
+		</item>
+
+		<item>
+			<title>Steam Artwork Cropper</title>
+			<link>https://james-ccg.github.io/cropper/</link>
+			<guid isPermaLink="false">jccg-2026-08-25-cropper</guid>
+			<pubDate>Mon, 25 Aug 2026 12:00:00 +0000</pubDate>
+			<description><![CDATA[
+				Crops Featured, Artwork, Workshop and profile Background images to
+				Steam's exact pixel sizes, entirely in the browser, against a
+				pixel-accurate recreation of the profile page.
+			]]></description>
+		</item>
+	</channel>
+</rss>
