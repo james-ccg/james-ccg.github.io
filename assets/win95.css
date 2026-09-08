@@ -140,3 +140,69 @@ body.is-dragging {
 	.desk-puck { display: none; }
 	.tasklist button { max-width: 90px; }
 }
+
+/* Puck sits in the corner of the desktop as full art, not the sprite. */
+.desk-puck {
+	position: absolute;
+	right: 10px;
+	bottom: 8px;
+	width: 190px;
+	height: auto;
+	pointer-events: none;
+	opacity: 0.9;
+	z-index: 1;
+}
+
+/* Shown only when every window is closed - otherwise the desktop is just a
+   large empty rectangle with no clue that anything is recoverable. */
+.desk-empty {
+	position: absolute;
+	inset: 0;
+	display: grid;
+	place-content: center;
+	gap: 8px;
+	justify-items: center;
+	text-align: center;
+	color: #eaf7f7;
+	font-family: var(--font-mono);
+	font-size: 13px;
+	z-index: 2;
+}
+
+.desk-empty[hidden] {
+	display: none;
+}
+
+.desk-empty p {
+	margin: 0;
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.desk-empty .tiny {
+	font-size: 11px;
+	opacity: 0.75;
+}
+
+.shrine-gallery {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 6px;
+}
+
+.shrine-gallery a {
+	display: block;
+	background: #fff;
+	box-shadow: inset -1px -1px #fff, inset 1px 1px grey, inset -2px -2px #dfdfdf, inset 2px 2px #0a0a0a;
+	padding: 3px;
+}
+
+.shrine-gallery img {
+	width: 100%;
+	height: 110px;
+	object-fit: cover;
+	display: block;
+}
+
+@media (max-width: 720px) {
+	.desk-puck { width: 110px; opacity: 0.55; }
+}

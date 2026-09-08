@@ -79,7 +79,7 @@ def runs(g, ch):
 def svg():
     g = build()
     return (
-        "<svg xmlns='http://www.w3.org/2000/svg' width='28' height='28' "
+        "<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' "
         f"viewBox='0 0 {N} {N}' shape-rendering='crispEdges'>"
         f"<g fill='{COLORS['o']}'>{runs(g, 'o')}</g>"
         f"<g fill='{COLORS['P']}'>{runs(g, 'P')}</g></svg>"

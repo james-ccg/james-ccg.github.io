@@ -16,7 +16,34 @@
 	if (!desk) return;
 
 	var tasks = document.querySelector('[data-tasklist]');
+	var hint = document.querySelector('[data-desk-hint]');
 	var z = 10;
+
+	/* Closing every window used to leave a large empty teal rectangle with no
+	   way back except knowing the taskbar buttons still worked. Show a way out
+	   whenever nothing is open. */
+	function syncEmpty() {
+		if (!hint) return;
+		var open = Array.prototype.some.call(
+			desk.querySelectorAll('.window'),
+			function (w) { return !w.hidden; }
+		);
+		hint.hidden = open;
+	}
+
+	function openAll() {
+		desk.querySelectorAll('.window').forEach(function (w) {
+			w.hidden = false;
+		});
+		if (tasks) {
+			tasks.querySelectorAll('button').forEach(function (b) {
+				b.setAttribute('aria-pressed', 'false');
+			});
+		}
+		var first = desk.querySelector('.window');
+		if (first) focus(first);
+		syncEmpty();
+	}
 
 	/* Windows are real content in normal flow, so the page reads without JS.
 	   Taking them out has to happen in two passes: the moment the first one
@@ -129,6 +156,7 @@
 			} else {
 				focus(win);
 			}
+			syncEmpty();
 		});
 		tasks.appendChild(b);
 		return b;
@@ -158,6 +186,7 @@
 					var b = tasks.querySelector('[data-for="' + win.id + '"]');
 					if (b) b.setAttribute('aria-pressed', 'false');
 				}
+				syncEmpty();
 			});
 		}
 		var min = win.querySelector('[aria-label="Minimize"]');
@@ -168,11 +197,21 @@
 					var b = tasks.querySelector('[data-for="' + win.id + '"]');
 					if (b) b.setAttribute('aria-pressed', 'false');
 				}
+				syncEmpty();
 			});
 		}
 
 		if (i === 0) focus(win);
 	});
+
+	// Double-clicking bare desktop reopens everything, the way a real one
+	// would let you get your windows back.
+	desk.addEventListener('dblclick', function (e) {
+		if (e.target === desk) openAll();
+	});
+	var restore = document.querySelector('[data-restore]');
+	if (restore) restore.addEventListener('click', openAll);
+	syncEmpty();
 
 	var clock = document.querySelector('[data-clock]');
 	if (clock) {

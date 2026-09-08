@@ -12,7 +12,7 @@
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" />
 	<link rel="stylesheet" href="../assets/style.css?v=3" />
 	<link rel="stylesheet" href="../assets/vendor/98.css" />
-	<link rel="stylesheet" href="../assets/win95.css" />
+	<link rel="stylesheet" href="../assets/win95.css?v=2" />
 	<link rel="icon" href="../assets/favicon.png" type="image/png" />
 	<link rel="alternate" type="application/rss+xml" title="james-ccg - updates" href="../updates.xml" />
 
@@ -58,7 +58,13 @@
 		<p class="desk-hint">C:\&gt; a corner of the internet for a boy who keeps dying</p>
 
 		<div class="desktop" data-desktop>
-			<img class="desk-puck" src="../assets/mascot/puck-256.webp" alt="" width="256" height="256" />
+			<img class="desk-puck" src="../assets/mascot/puck-512.webp"
+			     alt="Puck" width="512" height="512" />
+			<div class="desk-empty" data-desk-hint hidden>
+				<p>Every window is closed.</p>
+				<button type="button" data-restore>Open them again</button>
+				<p class="tiny">(or double-click the desktop)</p>
+			</div>
 
 			<!-- ------------------------------------------------------------ -->
 			<div class="window" id="winWho" style="width: 420px">
@@ -168,6 +174,38 @@
 				</div>
 			</div>
 
+
+			<!-- ------------------------------------------------------------ -->
+			<div class="window" id="winGallery" style="width: 430px">
+				<div class="title-bar">
+					<div class="title-bar-text">gallery</div>
+					<div class="title-bar-controls">
+						<button aria-label="Minimize"></button>
+						<button aria-label="Close"></button>
+					</div>
+				</div>
+				<div class="window-body">
+					<div class="shrine-gallery">
+						<a href="../assets/shrine/subaru-art.webp" target="_blank" rel="noopener">
+							<img src="../assets/shrine/subaru-art-thumb.webp" alt="Subaru character art" loading="lazy" />
+						</a>
+						<a href="../assets/shrine/subaru-alt.webp" target="_blank" rel="noopener">
+							<img src="../assets/shrine/subaru-alt-thumb.webp" alt="Subaru, alternate art" loading="lazy" />
+						</a>
+						<a href="../assets/shrine/subaru-faces.webp" target="_blank" rel="noopener">
+							<img src="../assets/shrine/subaru-faces-thumb.webp" alt="Subaru face angles" loading="lazy" />
+						</a>
+						<a href="../assets/shrine/subaru-design.webp" target="_blank" rel="noopener">
+							<img src="../assets/shrine/subaru-design-thumb.webp" alt="Subaru season 1 character design" loading="lazy" />
+						</a>
+					</div>
+					<p style="font-size: 11px; margin-top: 10px">
+						Reference sheets and character art. More at the
+						<a href="https://rezero.fandom.com/wiki/Natsuki_Subaru/Image_Gallery" target="_blank" rel="noopener">Re:Zero wiki gallery</a>.
+					</p>
+				</div>
+			</div>
+
 			<!-- ------------------------------------------------------------ -->
 			<div class="window" id="winRules" style="width: 340px">
 				<div class="title-bar">
@@ -212,7 +250,7 @@
 	</footer>
 
 	<script src="../assets/app.js?v=2"></script>
-	<script src="../assets/win95.js"></script>
-	<script src="../assets/mascot.js?v=5"></script>
+	<script src="../assets/win95.js?v=2"></script>
+	<script src="../assets/mascot.js?v=6"></script>
 </body>
 </html>

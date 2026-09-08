@@ -14,11 +14,15 @@ import os
 
 from PIL import Image, ImageDraw
 
-BG = (20, 21, 28, 255)
-BG_TOP = (27, 29, 40, 255)
+BG = (13, 14, 20, 255)
+BG_TOP = (30, 33, 46, 255)
 AMBER = (255, 180, 84, 255)
 AMBER_TOP = (255, 194, 112, 255)
-TEXT = (242, 244, 250, 255)
+TEXT = (246, 248, 252, 255)
+# Puck's own aqua, used as the ground behind him. Amber under light grey fur
+# turned him muddy - the badge read as a beige smear at 1x.
+TEAL = (26, 74, 86, 255)
+TEAL_TOP = (44, 110, 124, 255)
 
 # 4x7 face. A 3x5 predecessor was too coarse to hold a letterform at this size.
 GLYPH_W, GLYPH_H, TRACK = 4, 7, 1
@@ -74,29 +78,32 @@ def head(mascot_dir, size):
 
 
 def build_badge(mascot_dir):
-    W, H, MARK = 88, 31, 31
+    """88x31. Puck's face fills the left third against his own aqua rather
+    than the amber block, which made light grey fur read as a beige smear at
+    1x, and the wordmark gets an accent rule instead of floating."""
+    W, H, MARK = 88, 31, 34
     im = vgrad((W, H), BG_TOP, BG)
-    im.paste(vgrad((MARK, H), AMBER_TOP, AMBER), (0, 0))
+    im.paste(vgrad((MARK, H), TEAL_TOP, TEAL), (0, 0))
 
-    puck = head(mascot_dir, MARK - 2)
-    im.paste(puck, ((MARK - puck.width) // 2, (H - puck.height) // 2), puck)
+    # Overfill the block so the face is cropped by it rather than shrunk
+    # inside it - a head fitted whole to 31px is mostly empty margin.
+    puck = head(mascot_dir, round(H * 1.32))
+    im.paste(puck, ((MARK - puck.width) // 2, H - puck.height + 2), puck)
+    im = im.crop((0, 0, W, H))
 
     d = ImageDraw.Draw(im)
-    d.line([(MARK, 0), (MARK, H)], fill=(20, 21, 28, 160))
+    d.line([(MARK, 0), (MARK, H)], fill=(255, 180, 84, 190))
 
-    # Scale 2, not 3. A square 31px mark leaves 57px for the wordmark, and
-    # JAMES at scale 3 measures 72 - it ran off the right edge with the S
-    # sheared in half. The assert makes that a build failure, not a surprise.
     scale = 2
     w = text_width('JAMES', scale)
     assert w <= W - MARK - 4, f'wordmark {w}px does not fit {W - MARK}px'
-    draw_text(d, 'JAMES', MARK + (W - MARK - w) // 2, (H - GLYPH_H * scale) // 2, scale, TEXT)
+    tx = MARK + (W - MARK - w) // 2
+    ty = (H - GLYPH_H * scale) // 2 - 2
+    draw_text(d, 'JAMES', tx, ty, scale, TEXT)
+    d.rectangle([tx, ty + GLYPH_H * scale + 3, tx + w - 1, ty + GLYPH_H * scale + 4], fill=AMBER)
 
-    # Bevel: light top-left, dark bottom-right.
-    d.line([(0, 0), (W, 0)], fill=(255, 255, 255, 56))
-    d.line([(0, 0), (0, H)], fill=(255, 255, 255, 33))
-    d.line([(0, H - 1), (W, H - 1)], fill=(0, 0, 0, 140))
-    d.line([(W - 1, 0), (W - 1, H)], fill=(0, 0, 0, 140))
+    d.rectangle([0, 0, W - 1, H - 1], outline=(255, 180, 84, 120))
+    d.line([(1, 1), (W - 2, 1)], fill=(255, 255, 255, 30))
     return im
 
 
@@ -104,11 +111,14 @@ def build_favicon(mascot_dir):
     """A tab icon needs its own square mark - the 88x31 badge was being
     squashed into a smear at 16px."""
     S = 64
-    im = vgrad((S, S), BG_TOP, BG)
-    plate = vgrad((S - 10, S - 10), AMBER_TOP, AMBER)
-    im.paste(plate, (5, 5))
-    puck = head(mascot_dir, S - 14)
-    im.paste(puck, ((S - puck.width) // 2, (S - puck.height) // 2), puck)
+    im = vgrad((S, S), TEAL_TOP, TEAL)
+    # Fill the tile with his face. Fitting the whole head inside a plate left
+    # him a grey speck ringed by amber once the browser got to 16px.
+    puck = head(mascot_dir, round(S * 1.18))
+    im.paste(puck, ((S - puck.width) // 2, S - puck.height + 3), puck)
+    im = im.crop((0, 0, S, S))
+    d = ImageDraw.Draw(im)
+    d.rectangle([0, 0, S - 1, S - 1], outline=(255, 180, 84, 150))
     return im
 
 
