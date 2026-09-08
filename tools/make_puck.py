@@ -55,6 +55,45 @@ def crop_head(im):
     return im.crop((round(w * l), round(h * t), round(w * r), round(h * b)))
 
 
+def largest_blob(im):
+    """Keep only the biggest connected run of opaque pixels.
+
+    Cropping a rectangle around the head also catches the base of his tail
+    rising behind it. That fragment is disconnected from the head, but it
+    still widens the alpha box - so centring the image centred head-plus-
+    fragment, and the head itself sat visibly off to one side. Flood fill
+    from the largest component and drop everything else."""
+    px = im.load()
+    w, h = im.size
+    seen = [[False] * w for _ in range(h)]
+    best, best_size = None, 0
+    for sy in range(h):
+        for sx in range(w):
+            if seen[sy][sx] or px[sx, sy][3] <= 128:
+                continue
+            stack, comp = [(sx, sy)], []
+            seen[sy][sx] = True
+            while stack:
+                x, y = stack.pop()
+                comp.append((x, y))
+                for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                    nx, ny = x + dx, y + dy
+                    if 0 <= nx < w and 0 <= ny < h and not seen[ny][nx] and px[nx, ny][3] > 128:
+                        seen[ny][nx] = True
+                        stack.append((nx, ny))
+            if len(comp) > best_size:
+                best, best_size = comp, len(comp)
+    if not best:
+        return im
+    keep = set(best)
+    out = Image.new('RGBA', im.size, (0, 0, 0, 0))
+    op = out.load()
+    for x, y in keep:
+        op[x, y] = px[x, y]
+    bbox = out.getbbox()
+    return out.crop(bbox) if bbox else out
+
+
 def fit_square(im, size):
     """Scale to fit inside size x size, centred, on transparency."""
     w, h = im.size
@@ -167,7 +206,7 @@ def main():
         out.save(path, 'WEBP', quality=90, method=6)
         print(f'wrote assets/mascot/puck-{size}.webp  {os.path.getsize(path) // 1024} KB')
 
-    idle, clean = pixelate(crop_head(src), SPRITE, PALETTE_COLORS)
+    idle, clean = pixelate(largest_blob(crop_head(src)), SPRITE, PALETTE_COLORS)
     eyes = eye_pixels(clean)
 
     # Paint the eyes back in from the clean downsample. His eyes are a small

@@ -12,7 +12,7 @@
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" />
 	<link rel="stylesheet" href="../assets/style.css?v=3" />
 	<link rel="stylesheet" href="../assets/vendor/98.css" />
-	<link rel="stylesheet" href="../assets/win95.css?v=2" />
+	<link rel="stylesheet" href="../assets/win95.css?v=3" />
 	<link rel="icon" href="../assets/favicon.png" type="image/png" />
 	<link rel="alternate" type="application/rss+xml" title="james-ccg - updates" href="../updates.xml" />
 
@@ -176,6 +176,27 @@
 
 
 			<!-- ------------------------------------------------------------ -->
+			<div class="window" id="winFace" style="width: 250px">
+				<div class="title-bar">
+					<div class="title-bar-text">subaru.exe</div>
+					<div class="title-bar-controls">
+						<button aria-label="Minimize"></button>
+						<button aria-label="Close"></button>
+					</div>
+				</div>
+				<div class="window-body">
+					<div class="face-stage">
+						<img id="faceFrame" src="../assets/shrine/faces/neutral.webp"
+						     alt="Subaru, cycling through expressions" width="180" height="180" />
+					</div>
+					<div class="field-row" style="justify-content: space-between; margin-top: 8px">
+						<button type="button" id="faceNext">next face</button>
+						<label><input type="checkbox" id="faceAuto" checked /> auto</label>
+					</div>
+				</div>
+			</div>
+
+			<!-- ------------------------------------------------------------ -->
 			<div class="window" id="winGallery" style="width: 430px">
 				<div class="title-bar">
 					<div class="title-bar-text">gallery</div>
@@ -186,22 +207,35 @@
 				</div>
 				<div class="window-body">
 					<div class="shrine-gallery">
-						<a href="../assets/shrine/subaru-art.webp" target="_blank" rel="noopener">
-							<img src="../assets/shrine/subaru-art-thumb.webp" alt="Subaru character art" loading="lazy" />
+						<a href="../assets/shrine/bd1.webp" target="_blank" rel="noopener">
+							<img src="../assets/shrine/bd1-thumb.webp" alt="Subaru, anime still 1" loading="lazy" width="320" height="180" />
 						</a>
-						<a href="../assets/shrine/subaru-alt.webp" target="_blank" rel="noopener">
-							<img src="../assets/shrine/subaru-alt-thumb.webp" alt="Subaru, alternate art" loading="lazy" />
+						<a href="../assets/shrine/bd2.webp" target="_blank" rel="noopener">
+							<img src="../assets/shrine/bd2-thumb.webp" alt="Subaru, anime still 2" loading="lazy" width="320" height="180" />
 						</a>
-						<a href="../assets/shrine/subaru-faces.webp" target="_blank" rel="noopener">
-							<img src="../assets/shrine/subaru-faces-thumb.webp" alt="Subaru face angles" loading="lazy" />
+						<a href="../assets/shrine/bd3.webp" target="_blank" rel="noopener">
+							<img src="../assets/shrine/bd3-thumb.webp" alt="Subaru, anime still 3" loading="lazy" width="320" height="180" />
 						</a>
-						<a href="../assets/shrine/subaru-design.webp" target="_blank" rel="noopener">
-							<img src="../assets/shrine/subaru-design-thumb.webp" alt="Subaru season 1 character design" loading="lazy" />
+						<a href="../assets/shrine/bd4.webp" target="_blank" rel="noopener">
+							<img src="../assets/shrine/bd4-thumb.webp" alt="Subaru, anime still 4" loading="lazy" width="320" height="180" />
+						</a>
+						<a href="../assets/shrine/bd5.webp" target="_blank" rel="noopener">
+							<img src="../assets/shrine/bd5-thumb.webp" alt="Subaru, anime still 5" loading="lazy" width="320" height="180" />
+						</a>
+						<a href="../assets/shrine/bd6.webp" target="_blank" rel="noopener">
+							<img src="../assets/shrine/bd6-thumb.webp" alt="Subaru, anime still 6" loading="lazy" width="320" height="180" />
+						</a>
+						<a href="../assets/shrine/bd7.webp" target="_blank" rel="noopener">
+							<img src="../assets/shrine/bd7-thumb.webp" alt="Subaru, anime still 7" loading="lazy" width="320" height="180" />
+						</a>
+						<a href="../assets/shrine/bd8.webp" target="_blank" rel="noopener">
+							<img src="../assets/shrine/bd8-thumb.webp" alt="Subaru, anime still 8" loading="lazy" width="320" height="180" />
 						</a>
 					</div>
 					<p style="font-size: 11px; margin-top: 10px">
-						Reference sheets and character art. More at the
+						Stills from the
 						<a href="https://rezero.fandom.com/wiki/Natsuki_Subaru/Image_Gallery" target="_blank" rel="noopener">Re:Zero wiki gallery</a>.
+						Re:Zero is Kadokawa / White Fox.
 					</p>
 				</div>
 			</div>
@@ -250,7 +284,31 @@
 	</footer>
 
 	<script src="../assets/app.js?v=2"></script>
-	<script src="../assets/win95.js?v=2"></script>
-	<script src="../assets/mascot.js?v=6"></script>
+	<script src="../assets/win95.js?v=3"></script>
+	<script>
+		/* The expression sheet is not a grid - the faces sit at scattered
+		   positions - so each was cropped to its own frame rather than driven
+		   by background-position. */
+		(function () {
+			var FACES = ['neutral', 'smirk', 'worried', 'shock', 'wink', 'shout', 'yell'];
+			var img = document.getElementById('faceFrame');
+			var auto = document.getElementById('faceAuto');
+			var next = document.getElementById('faceNext');
+			if (!img) return;
+			var i = 0;
+			function step() {
+				i = (i + 1) % FACES.length;
+				img.src = '../assets/shrine/faces/' + FACES[i] + '.webp';
+			}
+			next.addEventListener('click', step);
+			img.addEventListener('click', step);
+			var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+			if (reduced && auto) auto.checked = false;
+			setInterval(function () {
+				if (auto && auto.checked) step();
+			}, 1400);
+		})();
+	</script>
+	<script src="../assets/mascot.js?v=7"></script>
 </body>
 </html>

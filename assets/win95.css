@@ -5,6 +5,7 @@
 
 .desktop {
 	position: relative;
+	aspect-ratio: 16 / 9;
 	background: #128f8f;
 	background-image:
 		linear-gradient(rgba(0, 0, 0, 0.06) 1px, transparent 1px),
@@ -183,10 +184,17 @@ body.is-dragging {
 	opacity: 0.75;
 }
 
+/* Capped and scrollable: eight stills stacked two-wide made the window taller
+   than the whole 16:9 screen, and the desktop clips its overflow. */
 .shrine-gallery {
 	display: grid;
 	grid-template-columns: repeat(2, 1fr);
 	gap: 6px;
+	max-height: 260px;
+	overflow-y: auto;
+	padding: 3px;
+	background: #fff;
+	box-shadow: inset -1px -1px #fff, inset 1px 1px grey, inset -2px -2px #dfdfdf, inset 2px 2px #0a0a0a;
 }
 
 .shrine-gallery a {
@@ -198,11 +206,27 @@ body.is-dragging {
 
 .shrine-gallery img {
 	width: 100%;
-	height: 110px;
+	height: 84px;
 	object-fit: cover;
 	display: block;
 }
 
 @media (max-width: 720px) {
 	.desk-puck { width: 110px; opacity: 0.55; }
+}
+
+.face-stage {
+	background: #fff;
+	box-shadow: inset -1px -1px #fff, inset 1px 1px grey, inset -2px -2px #dfdfdf, inset 2px 2px #0a0a0a;
+	display: grid;
+	place-items: center;
+	padding: 4px;
+}
+
+.face-stage img {
+	width: 180px;
+	height: 180px;
+	object-fit: contain;
+	cursor: pointer;
+	display: block;
 }

@@ -84,7 +84,10 @@
 		var lowest = placed.reduce(function (m, p, i) {
 			return Math.max(m, p.y + boxes[i].h);
 		}, 0);
-		desk.style.minHeight = lowest + pad + 'px';
+		// Keep the screen 16:9 like a monitor, but never crop content: the
+		// desktop clips its overflow, so a tall pack has to be allowed to win.
+		desk.style.minHeight =
+			Math.max(lowest + pad, Math.round((deskBox.width * 9) / 16)) + 'px';
 	}
 
 	function focus(win) {
