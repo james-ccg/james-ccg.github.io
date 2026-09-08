@@ -85,11 +85,9 @@ def build_badge(mascot_dir):
     im = vgrad((W, H), BG_TOP, BG)
     im.paste(vgrad((MARK, H), TEAL_TOP, TEAL), (0, 0))
 
-    # Overfill the block so the face is cropped by it rather than shrunk
-    # inside it - a head fitted whole to 31px is mostly empty margin.
-    puck = head(mascot_dir, round(H * 1.32))
-    im.paste(puck, ((MARK - puck.width) // 2, H - puck.height + 2), puck)
-    im = im.crop((0, 0, W, H))
+    # Fit the head whole, centred. Overfilling cropped his ears.
+    puck = head(mascot_dir, H - 4)
+    im.paste(puck, ((MARK - puck.width) // 2, (H - puck.height) // 2), puck)
 
     d = ImageDraw.Draw(im)
     d.line([(MARK, 0), (MARK, H)], fill=(255, 180, 84, 190))
@@ -112,11 +110,10 @@ def build_favicon(mascot_dir):
     squashed into a smear at 16px."""
     S = 64
     im = vgrad((S, S), TEAL_TOP, TEAL)
-    # Fill the tile with his face. Fitting the whole head inside a plate left
-    # him a grey speck ringed by amber once the browser got to 16px.
-    puck = head(mascot_dir, round(S * 1.18))
-    im.paste(puck, ((S - puck.width) // 2, S - puck.height + 3), puck)
-    im = im.crop((0, 0, S, S))
+    # Fit the whole head with a little air. Overfilling to 1.18 and anchoring
+    # to the bottom sliced his ears off the top of the tile.
+    puck = head(mascot_dir, S - 8)
+    im.paste(puck, ((S - puck.width) // 2, (S - puck.height) // 2), puck)
     d = ImageDraw.Draw(im)
     d.rectangle([0, 0, S - 1, S - 1], outline=(255, 180, 84, 150))
     return im
