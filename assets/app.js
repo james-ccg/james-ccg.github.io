@@ -103,7 +103,15 @@
 	/* ---------- last updated --------------------------------------- */
 	/* Taken from the repo's own last commit through the public GitHub API,
 	   so it is the real thing rather than a date typed into the markup and
-	   left to rot. Falls back to staying hidden if the call fails. */
+	   left to rot.
+
+	   The row ships hidden and is only ever revealed once a real date is in
+	   hand. Everything about this call can fail in a way the visitor would
+	   otherwise see: unauthenticated GitHub allows 60 requests an hour per
+	   address and answers 403 after that, the request can simply be slow,
+	   and a reader with the network blocked gets nothing at all. In every
+	   one of those cases the right thing on screen is no row, not a
+	   placeholder dash sitting where a date belongs. */
 	var updatedEl = document.getElementById('updatedAt');
 	if (updatedEl) {
 		fetch('https://api.github.com/repos/james-ccg/james-ccg.github.io/commits?per_page=1')
@@ -116,10 +124,11 @@
 				var days = Math.floor((Date.now() - new Date(when)) / 86400000);
 				updatedEl.textContent =
 					days <= 0 ? 'today' : days === 1 ? 'yesterday' : days + 'd ago';
+				var row = updatedEl.closest('[data-optional]');
+				if (row) row.hidden = false;
 			})
 			.catch(function () {
-				var row = updatedEl.closest('[data-optional]');
-				if (row) row.hidden = true;
+				/* Already hidden - nothing to undo. */
 			});
 	}
 

@@ -1,7 +1,14 @@
 /* ---------- arcade ------------------------------------------------- */
+/* align-items: start, not the grid default of stretch. The three cards hold
+   very different amounts - a pet with three meters, a machine with a ten-slot
+   collection, a list of three checkboxes - so stretching them all to the
+   tallest left two of them with a third of their box empty under the last
+   line, which reads as content that failed to load rather than a card that is
+   simply shorter. */
 .arcade-grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+	align-items: start;
 	gap: var(--gap);
 	padding-bottom: 10px;
 }

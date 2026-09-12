@@ -10,7 +10,7 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" />
-	<link rel="stylesheet" href="./assets/style.css?v=4" />
+	<link rel="stylesheet" href="./assets/style.css?v=5" />
 	<link rel="icon" href="./assets/favicon.png" type="image/png" />
 	<link rel="alternate" type="application/rss+xml" title="james-ccg - updates" href="./updates.xml" />
 
@@ -96,7 +96,11 @@
 					<div class="idcard-rows">
 						<div class="row"><span>where</span> <b>Kingdom of Lugunica</b></div>
 						<div class="row"><span>doing</span> <b>respawning... again.</b></div>
-						<div class="row" data-optional><span>updated</span> <b id="updatedAt">-</b></div>
+						<!-- Hidden until the real date lands. The value comes from the
+						     repo's last commit over the network, so a placeholder here
+						     would be on screen for the whole of a slow request and would
+						     stay forever on a failed one. -->
+						<div class="row" data-optional hidden><span>updated</span> <b id="updatedAt"></b></div>
 					</div>
 					<a class="b88" href="https://steamcommunity.com/id/james_ccg" target="_blank" rel="noopener" style="--mark:#1b2838" title="My Steam profile">
 						<span class="b88-mark"><svg class="b88-ico" aria-hidden="true"><use href="#i-steam"/></svg></span>
@@ -117,27 +121,42 @@
 						<a class="btn btn-primary" href="#projects">SEE THE WORK</a>
 						<a class="btn" href="https://github.com/james-ccg" target="_blank" rel="noopener">GITHUB</a>
 					</div>
-					<div class="ticker">
-						<span>building <b>websites &amp; the automation behind them</b></span>
-						<span>&middot;</span>
-						<span>learning <b>Node.js &amp; auth flows</b></span>
-					</div>
 				</div>
+			</div>
+			<!-- Outside the two columns on purpose. A headline sets its own
+			     ragged right edge and the identity card is shorter than the
+			     copy beside it, so the hero was the one block on the page that
+			     ended nowhere in particular; a strip across the full width
+			     closes it on the same edge every section below it uses. -->
+			<div class="panel ticker">
+				<span>building <b>websites &amp; the automation behind them</b></span>
+				<span class="ticker-sep">&middot;</span>
+				<span>learning <b>Node.js &amp; auth flows</b></span>
 			</div>
 		</section>
 
 		<!-- ============================ about =========================== -->
 		<section class="sec shell" id="about">
 			<div class="sec-head"><span class="marker">&gt;</span><h2>about</h2></div>
-			<p class="sec-lede">
-				I build websites, and I automate what they would otherwise ask a person to do
-				twice. Frontend and full-stack, mostly React, Vite and TypeScript, working
-				through Node.js, auth flows and project structure that survives contact with a
-				second developer. The tools below are all the same idea: find the manual step,
-				delete it. Outside of code I stream and make gaming content, and I am always up
-				for collaborating on frontend or full-stack work.
-			</p>
-			<div class="chips">
+			<!-- Prose and stack side by side rather than stacked. A paragraph
+			     capped at a readable measure inside a 1020px section leaves a
+			     third of the row empty and ends on a different right edge from
+			     everything under it; beside a second box they share the
+			     section's edges and the measure reads as a choice. -->
+			<div class="about-grid">
+				<div class="panel about-bio">
+					<p>
+						I build websites, and I automate what they would otherwise ask a person to do
+						twice. Frontend and full-stack, mostly React, Vite and TypeScript, working
+						through Node.js, auth flows and project structure that survives contact with a
+						second developer. The tools below are all the same idea: find the manual step,
+						delete it. Outside of code I stream and make gaming content, and I am always up
+						for collaborating on frontend or full-stack work.
+					</p>
+				</div>
+				<div class="panel about-stack">
+					<p class="panel-label">stack</p>
+					<div class="chips">
 				<span class="chip">JavaScript</span>
 				<span class="chip">TypeScript</span>
 				<span class="chip">React</span>
@@ -151,6 +170,8 @@
 				<span class="chip">C++</span>
 				<span class="chip">Docker</span>
 				<span class="chip">Git</span>
+					</div>
+				</div>
 			</div>
 		</section>
 
@@ -213,7 +234,11 @@
 			<div class="sec-head"><span class="marker">&gt;</span><h2>elsewhere</h2></div>
 			<p class="sec-lede">Where to find me. Mail is the one I actually read.</p>
 
-			<div class="wall">
+			<!-- The wall is boxed for the same reason the bio is: loose buttons
+			     ended on whatever edge the last one in the row happened to
+			     land on, which was never the edge of anything above or below
+			     it. -->
+			<div class="panel wall">
 				<a class="b88" href="mailto:7ahadbek@gmail.com" style="--mark:#6b7280"><span class="b88-mark"><svg class="b88-ico" aria-hidden="true"><use href="#i-mail"/></svg></span><span class="b88-text">EMAIL ME</span></a>
 				<a class="b88" href="https://github.com/james-ccg" target="_blank" rel="noopener" style="--mark:#24292f"><span class="b88-mark"><svg class="b88-ico" aria-hidden="true"><use href="#i-github"/></svg></span><span class="b88-text">GITHUB</span></a>
 				<a class="b88" href="https://steamcommunity.com/id/James_ccg" target="_blank" rel="noopener" style="--mark:#1b2838"><span class="b88-mark"><svg class="b88-ico" aria-hidden="true"><use href="#i-steam"/></svg></span><span class="b88-text">STEAM</span></a>
@@ -233,7 +258,7 @@
 			</div>
 
 			<div class="sec-head" style="margin-top: 30px"><span class="marker">&gt;</span><h2>support</h2></div>
-			<div class="wall">
+			<div class="panel wall">
 				<a class="b88" href="https://buymeacoffee.com/james_ccg" target="_blank" rel="noopener" style="--mark:#ffdd00;--ink:#14151c"><span class="b88-mark"><svg class="b88-ico" aria-hidden="true"><use href="#i-buymeacoffee"/></svg></span><span class="b88-text">BUY ME<br />A COFFEE</span></a>
 				<a class="b88" href="https://patreon.com/xdjames" target="_blank" rel="noopener" style="--mark:#f96854"><span class="b88-mark"><svg class="b88-ico" aria-hidden="true"><use href="#i-patreon"/></svg></span><span class="b88-text">PATREON</span></a>
 				<a class="b88" href="https://ko-fi.com/xdjames" target="_blank" rel="noopener" style="--mark:#ff5e5b"><span class="b88-mark"><svg class="b88-ico" aria-hidden="true"><use href="#i-kofi"/></svg></span><span class="b88-text">KO-FI</span></a>
@@ -261,7 +286,7 @@
 			<div class="sec-head"><span class="marker">&gt;</span><h2>toys</h2></div>
 			<p class="sec-lede">
 				Puck lives in the corner. There is more of this in the
-				<a href="./arcade/">arcade</a>
+				<a href="./arcade/">arcade</a> and the
 				<a href="./shrine/">shrine</a>. All of it is remembered in your own browser.
 			</p>
 			<div class="panel toys" data-toys></div>
@@ -274,6 +299,16 @@
 				Places worth your time. Got a button? <a href="mailto:7ahadbek@gmail.com">Send it over</a>
 				and I'll put it up.
 			</p>
+			<!-- Deliberately empty, and it has to look deliberately empty. A
+			     heading with nothing under it reads as a section that broke;
+			     a marked-out space the right shape for the buttons that will
+			     go in it reads as a wall waiting to be filled. -->
+			<div class="panel wall wall-empty">
+				<span class="b88 b88-slot" aria-hidden="true"></span>
+				<span class="b88 b88-slot" aria-hidden="true"></span>
+				<span class="b88 b88-slot" aria-hidden="true"></span>
+				<p class="wall-empty-note">No buttons up yet &mdash; yours could be the first.</p>
+			</div>
 		</section>
 	</main>
 
@@ -291,7 +326,7 @@
 		</div>
 	</footer>
 
-	<script src="./assets/app.js?v=2"></script>
+	<script src="./assets/app.js?v=3"></script>
 	<script src="./assets/mascot.js?v=17"></script>
 </body>
 </html>
