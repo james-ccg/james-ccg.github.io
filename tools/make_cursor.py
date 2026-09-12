@@ -75,13 +75,26 @@ PATHS = {
 }
 
 # The hand, and its open-palm sibling for grab: x, y, w, h, r
+#
+# Geometry matters more than it looks here. An earlier version had the index
+# finger near the middle of the palm with two small knuckle bumps that merged
+# into it, and the result read as a fist with one finger raised - an offensive
+# gesture, not a pointer. A pointing hand needs the finger at the far LEFT of
+# the palm, the thumb clearly out to the side, and three folded fingers
+# stepping down to the right so the hand has an obvious front and back.
 HAND_SHAPES = [
-    (8.3, 2.2, 3.9, 12.0, 1.95),    # index finger
-    (12.6, 8.2, 3.5, 6.5, 1.75),    # folded middle
-    (15.2, 9.4, 3.4, 5.5, 1.70),    # folded ring
-    (5.0, 13.0, 3.3, 5.6, 1.65),    # thumb
-    (6.4, 11.6, 12.0, 10.4, 3.6),   # palm
+    (7.2, 1.8, 3.5, 12.8, 1.75),    # index finger, hard left, well clear of the palm
+    (11.3, 8.4, 3.2, 6.2, 1.60),    # folded middle
+    (14.2, 9.4, 3.1, 5.2, 1.55),    # folded ring
+    (16.9, 10.6, 2.9, 4.2, 1.45),   # folded little
+    (4.3, 13.0, 3.3, 5.6, 1.65),    # thumb, out on the left
+    (6.0, 12.0, 13.4, 9.8, 3.4),    # palm
 ]
+
+# Thin dark lines between the folded fingers. Without them the knuckles are
+# one violet lump: adjacent shapes in a single-fill silhouette have no edge
+# between them, and that lump is exactly what made the hand read wrong.
+HAND_CREASES = [(11.1, 9.0, 4.6), (14.0, 10.0, 3.8), (16.7, 11.2, 3.0)]
 
 GRAB_SHAPES = [
     (7.4, 4.0, 3.2, 9.0, 1.60),
@@ -106,7 +119,7 @@ def outlined(path, rule=''):
     )
 
 
-def hand(shapes, lit=None):
+def hand(shapes, lit=None, creases=None):
     def rects(grow, fill):
         out = []
         for x, y, w, h, r in shapes:
@@ -118,6 +131,9 @@ def hand(shapes, lit=None):
         return f"<g fill='{fill}'>" + ''.join(out) + '</g>'
 
     inner = rects(1.6, EDGE) + rects(0, BODY)
+    for cx, cy, ch in creases or []:
+        inner += (f"<rect x='{cx}' y='{cy}' width='0.9' height='{ch}' rx='0.45' "
+                  f"fill='{EDGE}'/>")
     if lit:
         inner += f"<rect x='{lit[0]}' y='{lit[1]}' width='1.4' height='{lit[2]}' rx='0.7' fill='{LIT}'/>"
     return wrap(inner)
@@ -138,7 +154,7 @@ def build():
             "stroke-linecap='round' fill='none'/></svg>"),
         3, 2,
     )
-    pack['pointer'] = (hand(HAND_SHAPES, (9.1, 3.2, 9)), 9, 2)
+    pack['pointer'] = (hand(HAND_SHAPES, (8.0, 2.8, 9.4), HAND_CREASES), 8, 2)
     pack['grab'] = (hand(GRAB_SHAPES), MID, 6)
     return pack
 
