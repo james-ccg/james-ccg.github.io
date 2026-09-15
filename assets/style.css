@@ -103,6 +103,15 @@
 	box-sizing: border-box;
 }
 
+/* The hidden attribute only works through the browser's own stylesheet,
+   which any author rule setting display beats. The Steam status line
+   (display: inline-flex) and the "updated" row (display: flex) both ship
+   hidden until they have real data - and both were showing anyway, as an
+   empty dot and a bare "updated" label. */
+[hidden] {
+	display: none !important;
+}
+
 html {
 	scroll-behavior: smooth;
 }
