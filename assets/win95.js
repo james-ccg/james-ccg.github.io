@@ -121,6 +121,9 @@
 		var startX, startY, originX, originY, dragging = false;
 
 		function down(e) {
+			// Stacked (phone) layout: windows sit in the page's flow, and a drag
+			// would fight the page scrolling under the same finger.
+			if (desk.classList.contains('desk-flow')) return;
 			// Let the title-bar buttons work; only the bar itself drags.
 			if (e.target.closest('.title-bar-controls')) return;
 			var p = e.touches ? e.touches[0] : e;
@@ -181,7 +184,47 @@
 	}
 
 	var wins = Array.prototype.slice.call(desk.querySelectorAll('.window'));
-	layout(wins);
+
+	/* Below this width the desktop stops being a 16:9 screen. At phone width a
+	   16:9 box is under 200px tall while the windows run 150-260px, so packing
+	   them into it stacked every window on top of the next and pushed most of
+	   them out of the bottom of the screen - one entirely under another. The
+	   windows are authored in normal flow for exactly this reason (the page
+	   reads with JS off), so on a narrow screen they simply stay there: one
+	   column, full width, every word visible, and the desktop as tall as its
+	   windows. Wide screens keep the 16:9 desktop. */
+	var NARROW = 640;
+	var mode = null;
+
+	function clearPlacement() {
+		wins.forEach(function (w) {
+			w.style.position = '';
+			w.style.left = '';
+			w.style.top = '';
+		});
+	}
+
+	function arrange() {
+		var narrow = desk.parentElement.clientWidth < NARROW;
+		var next = narrow ? 'flow' : 'desk';
+		if (next === mode) return;
+		mode = next;
+		clearPlacement();
+		desk.classList.toggle('desk-flow', narrow);
+		if (narrow) {
+			desk.style.height = '';
+		} else {
+			// Measure in flow at the authored widths, then place.
+			layout(wins);
+		}
+	}
+
+	arrange();
+	var resizeTimer;
+	window.addEventListener('resize', function () {
+		clearTimeout(resizeTimer);
+		resizeTimer = setTimeout(arrange, 150);
+	});
 
 	/* Stacking follows authoring order, highest first. The default was the
 	   reverse - later windows on top - which buried who.txt and why_him.txt,

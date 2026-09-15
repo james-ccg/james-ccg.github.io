@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="robots" content="noindex" />
+	<meta name="theme-color" content="#14151c" />
+	<title>Not found - James (xdjames)</title>
+
+	<!-- GitHub Pages serves this file for every unknown path, at that path, so
+	     every reference here is root-absolute: a relative one would resolve
+	     against whatever broken URL the visitor typed. -->
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" />
+	<link rel="stylesheet" href="/assets/style.css?v=7" />
+	<link rel="icon" href="/assets/favicon.png" type="image/png" />
+
+	<script>
+		(function () {
+			try {
+				var t = localStorage.getItem('jccg:theme');
+				if (t && t !== 'auto') document.documentElement.setAttribute('data-theme', t);
+			} catch (e) {}
+		})();
+	</script>
+	<style>
+		.lost { padding-top: 72px; padding-bottom: 72px; }
+		.lost .code { font-family: var(--font-pixel); font-size: 13px; color: var(--accent); letter-spacing: 0.06em; margin: 0 0 10px; }
+		.lost h1 { font-size: clamp(26px, 5vw, 38px); line-height: 1.15; margin: 0 0 12px; text-wrap: balance; }
+		.lost p { color: var(--text-dim); max-width: 56ch; margin: 0 0 22px; }
+		.lost .path { font-family: var(--font-mono); color: var(--text); word-break: break-all; }
+		.lost .ways { display: flex; flex-wrap: wrap; gap: 10px; }
+	</style>
+</head>
+<body>
+	<header class="site">
+		<nav class="nav shell" aria-label="Main">
+			<a class="brand" href="/">james<span>-ccg</span></a>
+			<button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks">&#9776;</button>
+			<div class="nav-links" id="navLinks">
+				<a href="/#about">about</a>
+				<a href="/#projects">work</a>
+				<a href="/#contact">elsewhere</a>
+				<a href="/cropper/">cropper</a>
+				<a href="/arcade/">arcade</a>
+				<a href="/shrine/">shrine</a>
+				<div class="theme-switch" role="group" aria-label="Colour theme">
+					<button type="button" data-theme="auto" aria-pressed="true" title="Follow my system">AUTO</button>
+					<button type="button" data-theme="retro" aria-pressed="false" title="Retro dark">RETRO</button>
+					<button type="button" data-theme="light" aria-pressed="false" title="Light">LIGHT</button>
+					<button type="button" data-theme="matrix" aria-pressed="false" title="Matrix">MTRX</button>
+				</div>
+			</div>
+		</nav>
+	</header>
+
+	<main class="shell lost">
+		<p class="code">404</p>
+		<h1>Nothing lives at this address.</h1>
+		<p>
+			<span class="path" id="lostPath"></span> doesn't exist - it may have moved, or the link had a
+			typo. Here is where things are:
+		</p>
+		<div class="ways">
+			<a class="btn btn-primary" href="/">THE HOMEPAGE</a>
+			<a class="btn" href="/cropper/">STEAM CROPPER</a>
+			<a class="btn" href="/cropper/backgrounds/">BACKGROUNDS</a>
+			<a class="btn" href="/cropper/faq/">FAQ</a>
+		</div>
+	</main>
+
+	<footer class="site">
+		<div class="shell foot-grid">
+			<span>&copy; <span id="year"></span> James (xdjames)</span>
+			<span class="foot-links">
+				<a href="/">&#8592; back to the site</a>
+				<a href="/updates.xml">RSS</a>
+			</span>
+		</div>
+	</footer>
+
+	<script>
+		document.getElementById('lostPath').textContent = location.pathname;
+	</script>
+	<script src="/assets/app.js?v=5"></script>
+</body>
+</html>

@@ -9,6 +9,38 @@
 		<atom:link href="https://james-ccg.github.io/updates.xml" rel="self" type="application/rss+xml" />
 
 		<item>
+			<title>A full end-to-end test, and everything it found fixed</title>
+			<link>https://james-ccg.github.io/</link>
+			<guid isPermaLink="false">jccg-2026-09-15-e2e-fixes</guid>
+			<pubDate>Tue, 15 Sep 2026 18:00:00 +0000</pubDate>
+			<description>Every page tested on phone, tablet and desktop. The homepage no longer runs into the screen edges on phones, the shrine stacks its windows on narrow screens, the idle screensaver stays off when switched off, the Excel converter and Discord renamer explain themselves, and there is a real 404 page.</description>
+		</item>
+
+		<item>
+			<title>Background Cropper: preview zoom, Steam's footer, and a dozen fixes</title>
+			<link>https://james-ccg.github.io/cropper/</link>
+			<guid isPermaLink="false">jccg-2026-09-13-cropper-zoom</guid>
+			<pubDate>Sun, 13 Sep 2026 12:00:00 +0000</pubDate>
+			<description>Zoom the whole mock profile at 50-125% while slicing a background, every showcase previewed in Steam's real 632px panel, the avatar frame back at Steam's size, and the page now wears Steam's footer.</description>
+		</item>
+
+		<item>
+			<title>The Cropper wears the Dying Light 2 profile theme</title>
+			<link>https://james-ccg.github.io/cropper/</link>
+			<guid isPermaLink="false">jccg-2026-09-12-dl2-theme</guid>
+			<pubDate>Sat, 12 Sep 2026 12:00:00 +0000</pubDate>
+			<description>The mock profile now matches the real one: Dying Light 2 background art, its animated avatar frame, and the Game Profile theme's own colours.</description>
+		</item>
+
+		<item>
+			<title>A Windows 98 shrine, an arcade, and Puck</title>
+			<link>https://james-ccg.github.io/shrine/</link>
+			<guid isPermaLink="false">jccg-2026-09-09-shrine-arcade</guid>
+			<pubDate>Wed, 09 Sep 2026 12:00:00 +0000</pubDate>
+			<description>A Natsuki Subaru shrine on a draggable Windows 98 desktop, with a Return by Death mini game; an arcade with a pet and a daily sticker roll; Puck in the corner and an optional cursor pack.</description>
+		</item>
+
+		<item>
 			<title>The homepage is a place now, not a CV</title>
 			<link>https://james-ccg.github.io/</link>
 			<guid isPermaLink="false">jccg-2026-09-08-homepage</guid>

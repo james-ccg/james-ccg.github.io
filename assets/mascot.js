@@ -280,7 +280,20 @@
 						el = null;
 					}
 				}
-				if (input.dataset.toy === 'saver' && !input.checked && saver) saver.hide();
+				if (input.dataset.toy === 'saver') {
+					if (!input.checked) {
+						// Cancel the countdown as well as hiding it. Clicking the box
+						// is itself activity: the page's click listener runs wake()
+						// before this change handler, and wake() - still seeing the
+						// screensaver on - re-arms a fresh 2.5 minute timer. Hiding
+						// alone left that timer running, so a switched-off
+						// screensaver still came on if the mouse then stayed put.
+						clearTimeout(wake._saver);
+						if (saver) saver.hide();
+					} else {
+						wake();
+					}
+				}
 			});
 		});
 

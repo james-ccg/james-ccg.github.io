@@ -82,12 +82,14 @@ header.site .nav-links a.current {
 	padding: 5px 11px;
 }
 
+.sec-head h1,
 .sec-head h2,
 .sec-lede,
 .foot-grid {
 	font-size: revert;
 }
 
+.sec-head h1,
 .sec-head h2 {
 	font-family: var(--font-pixel);
 	font-size: 17px;
@@ -444,4 +446,36 @@ body.is-dragging {
 
 .desk-empty {
 	color: #eaf7f7;
+}
+
+/* ---- Narrow screens: the windows stay in flow ---------------------------
+   win95.js switches the desktop to this below 640px (see arrange() there).
+   One column, each window the full width of the screen, the desktop exactly
+   as tall as what is open. The authored widths are inline styles, hence the
+   !important - they are right for the 16:9 desktop and wrong here. */
+.desktop.desk-flow {
+	height: auto;
+	min-height: 160px;
+}
+
+.desktop.desk-flow .window {
+	width: auto !important;
+	max-width: none;
+	margin: 0 0 12px;
+}
+
+.desktop.desk-flow .window:last-of-type {
+	margin-bottom: 0;
+}
+
+.desktop.desk-flow .title-bar {
+	cursor: default;
+}
+
+/* 98.css draws title-bar buttons at 16x14, well under a finger. Grown to a
+   24px target here, with the glyph kept centred in the larger face. */
+.desktop.desk-flow .title-bar-controls button {
+	min-width: 26px;
+	min-height: 24px;
+	background-position: center;
 }

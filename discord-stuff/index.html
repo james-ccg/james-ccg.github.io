@@ -3,9 +3,40 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Discord Channel Renamer</title>
+    <meta name="description" content="Bulk-rename Discord channels: paste the exported channel list as JSON, edit the names, and get back only the ones you changed.">
+    <link rel="icon" href="../assets/favicon.png" type="image/png">
+    <style>
+        :root {
+            --bg: #f4f5f8; --panel: #ffffff; --text: #1a1c24; --dim: #5b6070;
+            --border: #d6d9e3; --accent: #5865f2; color-scheme: light;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root { --bg: #14151c; --panel: #1c1e28; --text: #dfe1ea; --dim: #9aa0b4; --border: #30334a; --accent: #8c96ff; color-scheme: dark; }
+        }
+        * { box-sizing: border-box; }
+        body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+        main { max-width: 960px; margin: 0 auto; padding: 32px 20px 48px; }
+        h1 { font-size: 1.6rem; margin: 0 0 6px; }
+        h2 { font-size: 1rem; margin: 0 0 8px; }
+        .lede { color: var(--dim); margin: 0 0 20px; max-width: 64ch; }
+        ol { padding-left: 1.3em; margin: 0 0 24px; }
+        li { margin: 4px 0; }
+        code, pre { font-family: ui-monospace, "SFMono-Regular", Consolas, monospace; font-size: 13px; }
+        pre { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; margin: 6px 0 0; white-space: pre-wrap; word-break: break-all; }
+        .grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+        .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 16px; }
+        textarea { width: 100%; min-height: 160px; font-family: ui-monospace, Consolas, monospace; font-size: 13px; padding: 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text); resize: vertical; }
+        button { font: inherit; font-weight: 600; min-height: 36px; padding: 6px 16px; margin: 10px 0 18px; border: 0; border-radius: 4px; background: var(--accent); color: #fff; cursor: pointer; }
+        #items:empty::before { content: "Parsed channels appear here."; color: var(--dim); }
+        #items > div { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; }
+        #items input[type="checkbox"] { width: 18px; height: 18px; flex: none; }
+        #items input[type="text"] { flex: 1; min-width: 0; min-height: 32px; padding: 4px 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text); font: inherit; }
+        footer { margin-top: 36px; color: var(--dim); font-size: 14px; }
+        a { color: var(--accent); }
+        @media (max-width: 720px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+    </style>
     <script src="index.min.js"></script>
     <script>
         window.addEventListener('load', () => {
@@ -19,22 +50,40 @@
 </head>
 
 <body>
-    <table>
-        <tr>
-            <td>
-                <textarea id="originalItems" cols="30" rows="10" placeholder="Paste JSON array here"></textarea><br>
-                <button onclick="parseString()">Parse</button>
-                <br><br>
-                <textarea id="showNewArray" cols="30" rows="10" placeholder='Click "Generate" to create new JSON object' readonly></textarea><br>
-                <button onclick="generateNewList()">Generate</button><br>
-            </td>
-            <td>
-                <div id="items" style="margin-left: 30px;">
+    <main>
+        <h1>Discord Channel Renamer</h1>
+        <!-- The page used to be two bare text boxes and two buttons, with nothing
+             saying what goes in them. The expected shape is what the parser
+             reads: an array of { i: id, n: name }, with a "!" in front of the
+             id marking a text channel. -->
+        <p class="lede">Rename a lot of channels at once: paste the channel list, edit the names, and copy back only the ones you changed.</p>
 
-                </div>
-            </td>
-        </tr>
-    </table>
+        <ol>
+            <li>Paste the exported channel list into the first box and press <strong>Parse</strong>. It's a JSON array of channels, each an id and a name - put <code>!</code> in front of a text channel's id:
+                <pre>[{"i":"!123456789","n":"general"},{"i":"987654321","n":"Voice Lounge"}]</pre>
+            </li>
+            <li>Edit names in the <strong>Channels</strong> list. Text-channel names turn spaces into dashes as you type, the way Discord does; a changed channel is ticked for you.</li>
+            <li>Press <strong>Generate</strong> and copy the result: only the ticked channels, with their new names.</li>
+        </ol>
+
+        <div class="grid">
+            <div class="panel">
+                <h2><label for="originalItems">Channel list (JSON)</label></h2>
+                <textarea id="originalItems" placeholder='[{"i":"!123","n":"general"}]'></textarea>
+                <button onclick="parseString()">Parse</button>
+
+                <h2><label for="showNewArray">Renamed channels</label></h2>
+                <textarea id="showNewArray" placeholder='Press "Generate" to build the renamed list' readonly></textarea>
+                <button onclick="generateNewList()">Generate</button>
+            </div>
+            <div class="panel">
+                <h2>Channels</h2>
+                <div id="items"></div>
+            </div>
+        </div>
+
+        <footer>by xdjames &middot; <a href="https://james-ccg.github.io/#projects">more tools</a></footer>
+    </main>
 </body>
 
 </html>

@@ -3,43 +3,113 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Excel to PDF converter</title>
+    <title>Excel to PDF converter - FINKI exam schedules</title>
+    <meta
+      name="description"
+      content="Turn a FINKI exam schedule spreadsheet into a clean, printable PDF - converted in your browser, the file never leaves your machine."
+    />
+    <!-- The site's own icon. Without a link the browser asked for /favicon.ico,
+         which does not exist, and logged a 404 on every visit. -->
+    <link rel="icon" href="../assets/favicon.png" type="image/png" />
     <style>
+      :root {
+        --bg: #f4f5f8;
+        --panel: #ffffff;
+        --text: #1a1c24;
+        --dim: #5b6070;
+        --border: #d6d9e3;
+        --accent: #a4560a;
+        --err: #b3261e;
+        --err-bg: #fdecea;
+        color-scheme: light;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #14151c;
+          --panel: #1c1e28;
+          --text: #dfe1ea;
+          --dim: #9aa0b4;
+          --border: #30334a;
+          --accent: #ffc87a;
+          --err: #ffb4ab;
+          --err-bg: #3a1f1d;
+          color-scheme: dark;
+        }
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      }
+      main { max-width: 680px; margin: 0 auto; padding: 32px 20px 48px; }
+      h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 6px; text-wrap: balance; }
+      h2 { font-size: 1.05rem; margin: 32px 0 8px; }
+      .lede { color: var(--dim); margin: 0 0 24px; }
+      a { color: var(--accent); }
+      .tool {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 18px;
+        display: grid;
+        gap: 12px;
+      }
+      .tool label { display: inline-flex; align-items: center; gap: 8px; min-height: 28px; cursor: pointer; }
+      .tool input[type="checkbox"] { width: 18px; height: 18px; margin: 0; }
+      .tool input[type="file"] { max-width: 100%; font: inherit; }
+      .status { margin: 0; color: var(--dim); }
+      .status span { color: var(--text); font-weight: 600; }
       #errorBlock {
-        color: red;
-        border: 1px solid red;
-        border-radius: 2px;
-        padding: 10px 10px;
-        width: fit-content;
+        color: var(--err);
+        background: var(--err-bg);
+        border: 1px solid var(--err);
+        border-radius: 6px;
+        padding: 12px 14px;
       }
-      #disableColors {
-        margin-bottom: 30px;
-      }
+      #errorBlock p { margin: 0; }
+      #errorBlock details { margin-top: 8px; color: var(--dim); }
+      #errorBlock summary { cursor: pointer; }
+      #errorBlock pre { white-space: pre-wrap; word-break: break-word; font-size: 12px; margin: 8px 0 0; }
+      ol, ul { padding-left: 1.3em; }
+      li { margin: 6px 0; }
+      /* The screenshot was a fixed 400px wide, which at phone width pushed the
+         whole page 58px past the screen. */
+      .tutorial { display: block; margin-top: 8px; width: 400px; max-width: 100%; height: auto; border: 1px solid var(--border); border-radius: 4px; }
+      footer { margin-top: 36px; color: var(--dim); font-size: 14px; }
     </style>
   </head>
   <body>
-    <p>Client-side script for converting FINKI's exam schedules from Excel to PDF format</p>
-    <input type="checkbox" id="disableColors" />
-    <label for="disableColors">Disable years colors</label><br />
-    <input type="file" id="inputFile" />
-    <p>Status: <span id="status">Idle</span></p>
-    <div id="errorBlock" style="display: none"></div>
-    <h3>How to use this</h3>
-    <ol>
-      <li>
-        <img src="./static/tutorial.jpg" alt="" style="width: 400px" />
-      </li>
-      <li>Click on "Choose file" and select the Excel file</li>
-      <li>You should get a PDF file in a few seconds</li>
-    </ol>
-    <h3>Possible issues:</h3>
-    <ul>
-      <li>If it fails to read the file, convert it to older version ".xls" and try again</li>
-      <li>If it fails again, something new broke and pray the creator fixes it</li>
-    </ul>
-    <p style="color: #666">
-      by xdjames &middot; <a href="https://james-ccg.github.io/#projects">more tools</a>
-    </p>
-    <script src="./static/bundle.js"></script>
+    <main>
+      <h1>Excel to PDF: FINKI exam schedules</h1>
+      <p class="lede">
+        Converts FINKI's exam schedule spreadsheet into a clean, printable PDF. It all runs in
+        your browser - the file is never uploaded anywhere.
+      </p>
+
+      <div class="tool">
+        <label><input type="checkbox" id="disableColors" /> Disable year colours</label>
+        <input type="file" id="inputFile" accept=".xlsx,.xls" aria-label="Exam schedule spreadsheet" />
+        <p class="status">Status: <span id="status">Idle</span></p>
+        <div id="errorBlock" role="alert" style="display: none"></div>
+      </div>
+
+      <h2>How to use this</h2>
+      <ol>
+        <li>Download the schedule from Excel as a copy:<img class="tutorial" src="./static/tutorial.jpg" alt="Excel online, File menu: Save As, then Download a Copy" /></li>
+        <li>Choose the Excel file above.</li>
+        <li>The PDF downloads in a few seconds.</li>
+      </ol>
+
+      <h2>If it doesn't work</h2>
+      <ul>
+        <li>If the file won't read, save it again in the older <code>.xls</code> format and try that.</li>
+        <li>If that fails too, the schedule's layout has probably changed - let me know and I'll update the converter.</li>
+      </ul>
+
+      <footer>by xdjames &middot; <a href="https://james-ccg.github.io/#projects">more tools</a></footer>
+    </main>
+    <script src="./static/bundle.js?v=2"></script>
   </body>
 </html>

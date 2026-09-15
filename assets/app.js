@@ -114,21 +114,116 @@
 	   placeholder dash sitting where a date belongs. */
 	var updatedEl = document.getElementById('updatedAt');
 	if (updatedEl) {
-		fetch('https://api.github.com/repos/james-ccg/james-ccg.github.io/commits?per_page=1')
+		/* The commit date is cached for an hour. Every page view used to ask
+		   the API again, and unauthenticated GitHub allows 60 requests an hour
+		   per address - a handful of reloads, or several visitors behind one
+		   office or campus network, used it up, after which each view logged a
+		   403 and the row stayed hidden. A recent answer is as good as a fresh
+		   one for "3d ago", and a stale one is still better than none when the
+		   API refuses. */
+		var CACHE_KEY = 'jccg:updatedAt';
+		var CACHE_MS = 3600000;
+		var show = function (when) {
+			var days = Math.floor((Date.now() - new Date(when)) / 86400000);
+			if (isNaN(days)) return;
+			updatedEl.textContent =
+				days <= 0 ? 'today' : days === 1 ? 'yesterday' : days + 'd ago';
+			var row = updatedEl.closest('[data-optional]');
+			if (row) row.hidden = false;
+		};
+		var cached = null;
+		try {
+			cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+		} catch (e) {
+			cached = null;
+		}
+		if (cached && cached.when && Date.now() - cached.at < CACHE_MS) {
+			show(cached.when);
+		} else {
+			fetch('https://api.github.com/repos/james-ccg/james-ccg.github.io/commits?per_page=1')
+				.then(function (r) {
+					return r.ok ? r.json() : Promise.reject(r.status);
+				})
+				.then(function (commits) {
+					var when = commits && commits[0] && commits[0].commit.committer.date;
+					if (!when) return Promise.reject('no date');
+					try {
+						localStorage.setItem(CACHE_KEY, JSON.stringify({ when: when, at: Date.now() }));
+					} catch (e) {
+						/* private mode - just no cache */
+					}
+					show(when);
+				})
+				.catch(function () {
+					if (cached && cached.when) show(cached.when);
+					/* otherwise the row stays hidden */
+				});
+		}
+	}
+
+	/* ---------- Steam status ----------------------------------------
+	   Real, from the Steam profile. Steam blocks cross-origin reads, so a
+	   scheduled job (.github/workflows/steam-status.yml) reads the profile and
+	   publishes steam-status.json on this repo's `status` branch, which
+	   raw.githubusercontent.com serves to any origin.
+
+	   The file says when it was checked, and the wording follows its age: a
+	   job that has stopped running must not leave the card saying "online"
+	   for a week. Past FRESH, an online reading becomes "on Steam 3h ago",
+	   which is still true - that is when it was last seen online. Nothing to
+	   say (no file yet, network blocked) leaves the line hidden. */
+	var statusEl = document.getElementById('steamStatus');
+	if (statusEl && window.fetch) {
+		var STATUS_URL = 'https://raw.githubusercontent.com/james-ccg/james-ccg.github.io/status/steam-status.json';
+		var FRESH = 45 * 60000;
+		var ago = function (t) {
+			var mins = Math.max(0, Math.round((Date.now() - t) / 60000));
+			if (mins < 2) return 'just now';
+			if (mins < 60) return mins + 'm ago';
+			var hrs = Math.round(mins / 60);
+			if (hrs < 24) return hrs + 'h ago';
+			var days = Math.round(hrs / 24);
+			return days === 1 ? 'yesterday' : days + 'd ago';
+		};
+		// The CDN caches for five minutes; a five-minute bucket in the query
+		// keeps every visitor in the same window on one cached copy.
+		fetch(STATUS_URL + '?t=' + Math.floor(Date.now() / 300000))
 			.then(function (r) {
 				return r.ok ? r.json() : Promise.reject(r.status);
 			})
-			.then(function (commits) {
-				var when = commits && commits[0] && commits[0].commit.committer.date;
-				if (!when) return;
-				var days = Math.floor((Date.now() - new Date(when)) / 86400000);
-				updatedEl.textContent =
-					days <= 0 ? 'today' : days === 1 ? 'yesterday' : days + 'd ago';
-				var row = updatedEl.closest('[data-optional]');
-				if (row) row.hidden = false;
+			.then(function (s) {
+				var checked = Date.parse(s.checkedAt);
+				var last = s.lastOnline ? Date.parse(s.lastOnline) : NaN;
+				if (isNaN(checked)) return;
+				var on = s.state === 'online' || s.state === 'in-game';
+				var fresh = Date.now() - checked < FRESH;
+				var text, state, when;
+				if (on && fresh) {
+					state = s.state;
+					text = s.state === 'in-game' && s.game ? 'playing ' + s.game : 'online on Steam';
+					when = checked;
+				} else if (on) {
+					state = 'offline';
+					text = 'on Steam ' + ago(checked);
+					when = checked;
+				} else if (!isNaN(last)) {
+					state = 'offline';
+					text = 'on Steam ' + ago(last);
+					when = last;
+				} else {
+					state = 'offline';
+					text = 'offline on Steam';
+					when = checked;
+				}
+				statusEl.dataset.state = state;
+				statusEl.querySelector('.status-text').textContent = text;
+				statusEl.title =
+					(on && fresh ? 'Checked ' : 'Last seen online ') +
+					new Date(when).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' });
+				statusEl.hidden = false;
 			})
 			.catch(function () {
-				/* Already hidden - nothing to undo. */
+				/* no status file yet, or offline - the line stays hidden */
 			});
 	}
 

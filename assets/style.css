@@ -53,7 +53,7 @@
 	--text-faint: #878da0;
 	--accent: #b45f09;
 	--accent-ink: #ffffff;
-	--online: #1e8f63;
+	--online: #187552;
 	--link: #a4560a;
 	--tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cg fill='%23000000' fill-opacity='0.035'%3E%3Crect x='0' y='0' width='2' height='2'/%3E%3Crect x='16' y='16' width='2' height='2'/%3E%3Crect x='8' y='24' width='2' height='2'/%3E%3Crect x='24' y='8' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E");
 	color-scheme: light;
@@ -93,7 +93,7 @@
 		--text-faint: #878da0;
 		--accent: #b45f09;
 		--accent-ink: #ffffff;
-		--online: #1e8f63;
+		--online: #187552;
 		--link: #a4560a;
 		color-scheme: light;
 	}
@@ -175,7 +175,12 @@ img {
 
 /* ---------- section headings ------------------------------------- */
 .sec {
-	padding: 46px 0 8px;
+	/* Top and bottom only. Every .sec is also a .shell, and .shell's 20px side
+	   gutter lives in padding too - a shorthand here, later in the file and
+	   equally specific, zeroed it. On a wide screen the centred 1060px shell
+	   hid that; on anything narrower the page ran straight to the glass. */
+	padding-top: 46px;
+	padding-bottom: 8px;
 }
 
 .sec-head {
@@ -185,6 +190,9 @@ img {
 	margin: 0 0 6px;
 }
 
+/* h1 on a page whose first section heading is the page title (arcade,
+   shrine); h2 for the homepage's sections. Same look either way. */
+.sec-head h1,
 .sec-head h2 {
 	font-family: var(--font-pixel);
 	font-size: 17px;
@@ -312,7 +320,10 @@ header.site {
 
 /* ---------- hero -------------------------------------------------- */
 .hero {
-	padding: 40px 0 8px;
+	/* Top and bottom only - the same collision as .sec above: the hero is a
+	   .shell too. */
+	padding-top: 40px;
+	padding-bottom: 8px;
 }
 
 .hero-grid {
@@ -396,6 +407,40 @@ header.site {
 	border-radius: 50%;
 	box-shadow: 0 0 0 3px color-mix(in srgb, var(--online) 22%, transparent);
 	flex: none;
+}
+
+/* The status is a link to the Steam profile it comes from. The dot takes
+   Steam's own persona colours - blue online, green in game, grey away - so it
+   reads the way it does on a friends list; the words stay in the theme's
+   colours so they keep their contrast on every theme. */
+a.status {
+	min-height: 24px;
+	text-decoration: none;
+}
+
+a.status:hover .status-text {
+	text-decoration: underline;
+}
+
+.status[data-state='online'] .dot {
+	--dot: #57cbde;
+}
+
+.status[data-state='in-game'] .dot {
+	--dot: #90ba3c;
+}
+
+.status[data-state='offline'] {
+	color: var(--text-dim);
+}
+
+.status[data-state='offline'] .dot {
+	--dot: #898989;
+}
+
+.status[data-state] .dot {
+	background: var(--dot, var(--online));
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--dot, var(--online)) 24%, transparent);
 }
 
 .hero-copy .eyebrow {
@@ -868,6 +913,15 @@ footer.site {
 	flex-wrap: wrap;
 }
 
+/* Footer links were 19px tall single lines of 12px text. Padding rather than
+   a bigger font keeps the footer as quiet as it was while making each link a
+   comfortable tap. */
+.foot-links a {
+	display: inline-flex;
+	align-items: center;
+	min-height: 28px;
+}
+
 /* ---------- responsive -------------------------------------------- */
 @media (max-width: 820px) {
 	.hero-grid {
@@ -1033,6 +1087,16 @@ footer.site {
 	align-items: center;
 	gap: 7px;
 	cursor: pointer;
+	/* The whole label is the target, so give it a finger's height. */
+	min-height: 28px;
+}
+
+/* Browser-default checkboxes are 13px - under the 24px minimum target on a
+   touchscreen. */
+.toys input[type='checkbox'] {
+	width: 18px;
+	height: 18px;
+	margin: 0;
 }
 
 @media (max-width: 640px) {
