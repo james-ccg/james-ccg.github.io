@@ -90,7 +90,18 @@ export function nextStatus(xml, previous, now = Date.now()) {
 // Read the profile and work out the new status. Shared by this script and
 // tools/publish-steam-status.mjs, which runs the same thing from a PC.
 export async function fetchStatus(previous, now = Date.now()) {
-	const res = await fetch(PROFILE, { headers: { 'User-Agent': 'james-ccg.github.io status (+https://james-ccg.github.io/)' } });
+	// The cache-buster is not optional. Steam's community edge served a copy
+	// minutes old to a plain request - it reported "offline" while the profile
+	// page itself said "Currently Online" - so without a unique URL each time
+	// the status can stick on a stale reading.
+	const res = await fetch(`${PROFILE}&cb=${now}`, {
+		cache: 'no-store',
+		headers: {
+			'User-Agent': 'james-ccg.github.io status (+https://james-ccg.github.io/)',
+			'Cache-Control': 'no-cache',
+			Pragma: 'no-cache',
+		},
+	});
 	if (!res.ok) throw new Error(`Steam answered ${res.status}`);
 	const xml = await res.text();
 	if (!/<onlineState>/.test(xml)) throw new Error('no <onlineState> in the profile XML (private profile, or Steam changed the format)');
