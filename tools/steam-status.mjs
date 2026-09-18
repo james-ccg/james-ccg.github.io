@@ -22,6 +22,7 @@
    recomputing it every run would drift by the rounding; the time is fixed the
    run it is first seen and carried forward until the state changes. */
 import fs from 'node:fs';
+import path from 'node:path';
 
 const PROFILE = 'https://steamcommunity.com/id/james_ccg/?xml=1';
 const UNIT_MS = { sec: 1000, min: 60000, hr: 3600000, hour: 3600000, day: 86400000 };
@@ -86,6 +87,16 @@ export function nextStatus(xml, previous, now = Date.now()) {
 	};
 }
 
+// Read the profile and work out the new status. Shared by this script and
+// tools/publish-steam-status.mjs, which runs the same thing from a PC.
+export async function fetchStatus(previous, now = Date.now()) {
+	const res = await fetch(PROFILE, { headers: { 'User-Agent': 'james-ccg.github.io status (+https://james-ccg.github.io/)' } });
+	if (!res.ok) throw new Error(`Steam answered ${res.status}`);
+	const xml = await res.text();
+	if (!/<onlineState>/.test(xml)) throw new Error('no <onlineState> in the profile XML (private profile, or Steam changed the format)');
+	return nextStatus(xml, previous, now);
+}
+
 async function main() {
 	const [prevPath, outPath] = process.argv.slice(2);
 	if (!outPath) {
@@ -98,16 +109,14 @@ async function main() {
 	} catch {
 		previous = null;
 	}
-	const res = await fetch(PROFILE, { headers: { 'User-Agent': 'james-ccg.github.io status (+https://james-ccg.github.io/)' } });
-	if (!res.ok) throw new Error(`Steam answered ${res.status}`);
-	const xml = await res.text();
-	if (!/<onlineState>/.test(xml)) throw new Error('no <onlineState> in the profile XML (private profile, or Steam changed the format)');
-	const status = nextStatus(xml, previous);
+	const status = await fetchStatus(previous);
 	fs.writeFileSync(outPath, JSON.stringify(status, null, '\t') + '\n');
 	console.log(JSON.stringify(status));
 }
 
-if (import.meta.url === `file://${process.argv[1]}` || process.argv[1]?.endsWith('steam-status.mjs')) {
+// basename, not endsWith: "publish-steam-status.mjs" ends with this file's
+// name too, and importing it from there used to run this command line.
+if (process.argv[1] && path.basename(process.argv[1]) === 'steam-status.mjs') {
 	main().catch((e) => {
 		console.error(e.message);
 		process.exit(1);
