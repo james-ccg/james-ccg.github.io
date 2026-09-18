@@ -1,0 +1,62 @@
+# Keeps the homepage's Steam status current.
+#
+# Every 15 minutes: read the public Steam profile (tools/steam-status.mjs) and
+# publish the result as steam-status.json on the `status` branch. The page
+# reads it from raw.githubusercontent.com, which allows cross-origin reads -
+# Steam itself does not, which is the whole reason this job exists.
+#
+# The `status` branch is a single commit, replaced on every run with a force
+# push, so it never grows and main's history never sees it. It is authored as
+# James, like every other commit in this repository.
+#
+# GitHub runs scheduled jobs late under load (5-20 minutes is common), so the
+# status on the page can trail the real one by that much; the page words it
+# by age accordingly.
+name: steam status
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: steam-status
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: tools
+          sparse-checkout-cone-mode: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Read the last published status
+        run: |
+          curl -fsSL "https://raw.githubusercontent.com/${{ github.repository }}/status/steam-status.json" -o previous.json || echo '{}' > previous.json
+
+      - name: Read Steam
+        run: |
+          mkdir -p out
+          node tools/steam-status.mjs previous.json out/steam-status.json
+
+      - name: Publish to the status branch
+        working-directory: out
+        env:
+          TOKEN: ${{ github.token }}
+        run: |
+          git init -q -b status
+          git config user.name "James Riley"
+          git config user.email "7ahadbek@gmail.com"
+          git add steam-status.json
+          git commit -q -m "steam status"
+          git push -q --force "https://x-access-token:${TOKEN}@github.com/${{ github.repository }}.git" status
