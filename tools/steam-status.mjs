@@ -57,11 +57,31 @@ export function parseLastOnline(message, now = Date.now()) {
 	return null;
 }
 
+const ENTITIES = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", '#39': "'" };
+const decode = (s) => s.replace(/&(#39|amp|lt|gt|quot|apos);/g, (m, n) => ENTITIES[n] || m);
+
+// The game being played. Steam's profile XML does not carry <inGameInfo>
+// any more - seen live while playing Watch_Dogs 2, the whole document had
+// no such tag - and puts the name in the state message instead:
+//
+//   <stateMessage><![CDATA[In-Game<br/>Watch_Dogs 2]]></stateMessage>
+//
+// so take what follows the break. <inGameInfo> is still preferred where it
+// does appear, and <mostPlayedGames> is never consulted: those are games
+// played at some point, not the one running now.
+export function gameFromMessage(message) {
+	if (!message) return null;
+	const parts = message.split(/<br\s*\/?>/i);
+	const name = parts.length > 1 ? decode(parts[parts.length - 1]).trim() : '';
+	return name || null;
+}
+
 export function nextStatus(xml, previous, now = Date.now()) {
 	const raw = (tag(xml, 'onlineState') || '').toLowerCase();
 	const state = raw === 'in-game' ? 'in-game' : raw === 'online' ? 'online' : 'offline';
 	const inGame = xml.match(/<inGameInfo>([\s\S]*?)<\/inGameInfo>/);
-	const game = state === 'in-game' && inGame ? tag(inGame[1], 'gameName') : null;
+	const message = tag(xml, 'stateMessage');
+	const game = state !== 'in-game' ? null : (inGame && tag(inGame[1], 'gameName')) || gameFromMessage(message);
 	const prev = previous && typeof previous === 'object' ? previous : {};
 	const wasOn = prev.state === 'online' || prev.state === 'in-game';
 
@@ -71,7 +91,7 @@ export function nextStatus(xml, previous, now = Date.now()) {
 	} else if (prev.state === 'offline' && prev.lastOnline) {
 		lastOnline = Date.parse(prev.lastOnline);
 	} else {
-		const parsed = parseLastOnline(tag(xml, 'stateMessage'), now);
+		const parsed = parseLastOnline(message, now);
 		// Seen online on the previous run: the real logoff is between then and
 		// now, and Steam's own figure is the best estimate - but never earlier
 		// than the moment it was last seen online.
