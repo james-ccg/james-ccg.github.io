@@ -163,68 +163,117 @@
 
 	/* ---------- Steam status ----------------------------------------
 	   Real, from the Steam profile. Steam blocks cross-origin reads, so a
-	   scheduled job (.github/workflows/steam-status.yml) reads the profile and
+	   watcher (tools/publish-steam-status.mjs, started by
+	   tools/steam-status-watch.cmd) reads the profile from James's PC and
 	   publishes steam-status.json on this repo's `status` branch, which
 	   raw.githubusercontent.com serves to any origin.
 
-	   The file says when it was checked, and the wording follows its age: a
-	   job that has stopped running must not leave the card saying "online"
-	   for a week. Past FRESH, an online reading becomes "on Steam 3h ago",
-	   which is still true - that is when it was last seen online. Nothing to
-	   say (no file yet, network blocked) leaves the line hidden. */
+	   That watcher only runs while the PC is on, so the page must not take
+	   the file at its word. It reads "online" as "online as of checkedAt"
+	   and stops believing it once the file is older than the watcher's own
+	   round (everyMs) allows - which is what happens when the PC goes off.
+	   From then on the line counts up from the last moment Steam was
+	   actually seen, the way Steam's own "Last Online" does - and at once,
+	   without waiting out a round, when the watcher was closed properly and
+	   left a "stopped" on its way out. With no time
+	   to count from it simply says "offline"; with nothing to say at all
+	   (no file yet, network blocked) the line stays hidden. */
 	var statusEl = document.getElementById('steamStatus');
 	if (statusEl && window.fetch) {
 		var STATUS_URL = 'https://raw.githubusercontent.com/james-ccg/james-ccg.github.io/status/steam-status.json';
-		var FRESH = 45 * 60000;
+		// How long an "online" reading keeps counting as now. The file says
+		// how often it is refreshed; allow a couple of missed rounds, and
+		// fall back to 25 minutes for a file that does not say.
+		var GRACE_DEFAULT = 25 * 60000;
+		var grace = function (s) {
+			var every = Number(s.everyMs);
+			return every > 0 ? Math.min(Math.max(every * 2.5, 10 * 60000), 60 * 60000) : GRACE_DEFAULT;
+		};
+		// Steam's own unit ladder: seconds for the first minute, then
+		// minutes, then hours and minutes, then days.
 		var ago = function (t) {
-			var mins = Math.max(0, Math.round((Date.now() - t) / 60000));
-			if (mins < 2) return 'just now';
+			var secs = Math.max(0, Math.floor((Date.now() - t) / 1000));
+			if (secs < 5) return 'just now';
+			if (secs < 60) return secs + 's ago';
+			var mins = Math.floor(secs / 60);
 			if (mins < 60) return mins + 'm ago';
-			var hrs = Math.round(mins / 60);
-			if (hrs < 24) return hrs + 'h ago';
-			var days = Math.round(hrs / 24);
+			var hrs = Math.floor(mins / 60), rest = mins % 60;
+			if (hrs < 24) return rest ? hrs + 'h ' + rest + 'm ago' : hrs + 'h ago';
+			var days = Math.floor(hrs / 24);
 			return days === 1 ? 'yesterday' : days + 'd ago';
 		};
+
+		var textEl = statusEl.querySelector('.status-text');
+		var status = null, shownText = '';
+		var render = function () {
+			var s = status;
+			if (!s) return;
+			var checked = Date.parse(s.checkedAt);
+			var last = s.lastOnline ? Date.parse(s.lastOnline) : NaN;
+			if (isNaN(checked)) return;
+			var on = s.state === 'online' || s.state === 'in-game';
+			// "stopped" is the watcher's goodbye: believe nothing after it.
+			var live = on && !s.stopped && Date.now() - checked < grace(s);
+			var text, state, when;
+			if (live) {
+				state = s.state;
+				text = s.state === 'in-game' && s.game ? 'playing ' + s.game : 'online on Steam';
+				when = checked;
+			} else if (on) {
+				// Online in the file, but the watcher has said goodbye or the
+				// file stopped being refreshed: the PC went off. Count from the
+				// last round that saw Steam there.
+				state = 'offline';
+				when = isNaN(last) ? checked : Math.max(last, checked);
+				text = 'on Steam ' + ago(when);
+			} else if (!isNaN(last)) {
+				// Steam's own "last online" time, counted up here.
+				state = 'offline';
+				when = last;
+				text = 'on Steam ' + ago(when);
+			} else {
+				state = 'offline';
+				text = 'offline on Steam';
+				when = checked;
+			}
+			if (text === shownText && statusEl.dataset.state === state) return;
+			shownText = text;
+			statusEl.dataset.state = state;
+			textEl.textContent = text;
+			statusEl.title =
+				(live ? 'Checked ' : 'Last seen online ') +
+				new Date(when).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' });
+			statusEl.hidden = false;
+		};
+
 		// The CDN caches for five minutes; a five-minute bucket in the query
 		// keeps every visitor in the same window on one cached copy.
-		fetch(STATUS_URL + '?t=' + Math.floor(Date.now() / 300000))
-			.then(function (r) {
-				return r.ok ? r.json() : Promise.reject(r.status);
-			})
-			.then(function (s) {
-				var checked = Date.parse(s.checkedAt);
-				var last = s.lastOnline ? Date.parse(s.lastOnline) : NaN;
-				if (isNaN(checked)) return;
-				var on = s.state === 'online' || s.state === 'in-game';
-				var fresh = Date.now() - checked < FRESH;
-				var text, state, when;
-				if (on && fresh) {
-					state = s.state;
-					text = s.state === 'in-game' && s.game ? 'playing ' + s.game : 'online on Steam';
-					when = checked;
-				} else if (on) {
-					state = 'offline';
-					text = 'on Steam ' + ago(checked);
-					when = checked;
-				} else if (!isNaN(last)) {
-					state = 'offline';
-					text = 'on Steam ' + ago(last);
-					when = last;
-				} else {
-					state = 'offline';
-					text = 'offline on Steam';
-					when = checked;
-				}
-				statusEl.dataset.state = state;
-				statusEl.querySelector('.status-text').textContent = text;
-				statusEl.title =
-					(on && fresh ? 'Checked ' : 'Last seen online ') +
-					new Date(when).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' });
-				statusEl.hidden = false;
-			})
-			.catch(function () {
-				/* no status file yet, or offline - the line stays hidden */
-			});
+		var lastRead = 0;
+		var read = function () {
+			lastRead = Date.now();
+			return fetch(STATUS_URL + '?t=' + Math.floor(Date.now() / 300000))
+				.then(function (r) {
+					return r.ok ? r.json() : Promise.reject(r.status);
+				})
+				.then(function (s) {
+					status = s;
+					render();
+				})
+				.catch(function () {
+					/* no status file yet, or offline - keep what is on screen */
+				});
+		};
+		read();
+		// A page left open keeps counting, and asks again every five minutes
+		// so it can go back to "online" by itself when the PC comes back.
+		setInterval(function () {
+			if (document.hidden) return;
+			render();
+			if (Date.now() - lastRead > 300000) read();
+		}, 1000);
+		document.addEventListener('visibilitychange', function () {
+			if (!document.hidden) render();
+		});
 	}
 
 	/* ---------- hit counter ----------------------------------------

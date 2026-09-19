@@ -1,14 +1,13 @@
 #!/usr/bin/env node
-/* Publishes the Steam status from this machine, for when the GitHub job
-   cannot run.
+/* Publishes the Steam status from this machine.
 
      node tools/publish-steam-status.mjs            once
      node tools/publish-steam-status.mjs --watch    every 10 minutes
      node tools/publish-steam-status.mjs --watch=5m every 5 minutes
 
-   Same reading and same destination as .github/workflows/steam-status.yml -
-   steam-status.json on the `status` branch - so whichever runs, the page sees
-   the same file. Either can run; the last one to publish wins.
+   It writes steam-status.json on the `status` branch, which the homepage
+   reads from raw.githubusercontent.com - Steam itself allows no
+   cross-origin read, which is the whole reason this exists.
 
    What it costs: one request to steamcommunity.com per check (about 30 KB),
    and a push only when the status actually changed. Nothing is downloaded,
@@ -16,7 +15,17 @@
 
    The push is built with git plumbing rather than a checkout, so the branch
    stays a single commit and this repository's working tree is never touched -
-   you can keep working while it runs. */
+   you can keep working while it runs.
+
+   Two fields exist for the page rather than for Steam:
+
+     everyMs   how often this watcher refreshes the file. The page believes
+               an "online" reading for about two and a half rounds and then
+               starts counting up from it, so a PC that switches off never
+               leaves the card claiming "online".
+     stopped   written on the way out when this window is closed. The page
+               stops believing the reading at once instead of waiting out
+               everyMs, and counts from the last moment Steam was seen. */
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
@@ -28,6 +37,10 @@ const CACHE = path.join(REPO, 'tools', '.steam-status-cache.json');
 const RAW = 'https://raw.githubusercontent.com/james-ccg/james-ccg.github.io/status/steam-status.json';
 const BRANCH = 'status';
 const AUTHOR = { name: 'James Riley', email: '7ahadbek@gmail.com' };
+
+const arg = process.argv.find((a) => a.startsWith('--watch'));
+const every = arg && arg.includes('=') ? arg.split('=')[1] : '10m';
+const everyMs = (/m$/.test(every) ? parseFloat(every) * 60000 : parseFloat(every) * 1000) || 600000;
 
 const git = (args, opts = {}) =>
 	execFileSync('git', args, { cwd: REPO, encoding: 'utf8', ...opts }).trim();
@@ -44,8 +57,9 @@ function readCache() {
 }
 
 // What the page would show. Only a change here is worth a push - "checkedAt"
-// moves every run and nobody sees it.
-const shown = (s) => s && `${s.state}|${s.game || ''}|${s.lastOnline || ''}`;
+// moves every run and nobody sees it. "stopped" counts: clearing it again is
+// how a restarted watcher tells the page the reading is live once more.
+const shown = (s) => s && `${s.state}|${s.game || ''}|${s.lastOnline || ''}|${s.stopped ? 'stopped' : ''}`;
 
 function publish(status) {
 	const json = JSON.stringify(status, null, '\t') + '\n';
@@ -83,6 +97,7 @@ async function once() {
 		}
 	}
 	const status = await fetchStatus(previous);
+	if (arg) status.everyMs = everyMs;
 	// Without the history, an offline reading carries no "last online" - and
 	// publishing it would overwrite a good time with nothing. Wait for a round
 	// where the previous status can actually be read.
@@ -101,9 +116,26 @@ async function once() {
 	say(`${label} - published`);
 }
 
-const arg = process.argv.find((a) => a.startsWith('--watch'));
-const every = arg && arg.includes('=') ? arg.split('=')[1] : '10m';
-const ms = /m$/.test(every) ? parseFloat(every) * 60000 : parseFloat(every) * 1000 || 600000;
+// Closing the window (or shutting the PC down while it is open) is the normal
+// way this stops, and it is worth one last push: the page then counts from
+// this moment instead of waiting out everyMs first. A power cut publishes
+// nothing, of course - that is what everyMs is for.
+let stopping = false;
+function stop() {
+	if (stopping) return;
+	stopping = true;
+	const last = readCache();
+	if (last && !last.stopped && last.state !== 'offline') {
+		try {
+			publish({ ...last, stopped: true });
+			say('stopped - the page will count from here');
+		} catch (e) {
+			say('stopped, but the last push failed:', e.message);
+		}
+	}
+	process.exit(0);
+}
+for (const signal of ['SIGINT', 'SIGTERM', 'SIGHUP', 'SIGBREAK']) process.on(signal, stop);
 
 async function tick() {
 	try {
@@ -115,9 +147,9 @@ async function tick() {
 }
 
 if (arg) {
-	say(`watching every ${Math.round(ms / 60000)} min - close this window to stop`);
+	say(`watching every ${Math.round(everyMs / 60000)} min - close this window to stop`);
 	await tick();
-	setInterval(tick, ms);
+	setInterval(tick, everyMs);
 } else {
 	await tick();
 }
