@@ -42,6 +42,13 @@ const arg = process.argv.find((a) => a.startsWith('--watch'));
 const every = arg && arg.includes('=') ? arg.split('=')[1] : '10m';
 const everyMs = (/m$/.test(every) ? parseFloat(every) * 60000 : parseFloat(every) * 1000) || 600000;
 
+// The first round of a run always publishes, even when nothing looks
+// changed. Closing the window pushes a goodbye and then writes the local
+// cache, and Windows allows only a few seconds for both - so the push can
+// land while the cache write does not. Comparing against that stale cache
+// would leave "stopped" on the branch while this is running again.
+let published = false;
+
 const git = (args, opts = {}) =>
 	execFileSync('git', args, { cwd: REPO, encoding: 'utf8', ...opts }).trim();
 
@@ -106,13 +113,14 @@ async function once() {
 		return;
 	}
 	const label = status.state === 'in-game' ? `in game: ${status.game}` : status.state;
-	if (shown(status) === shown(previous)) {
+	if (published && shown(status) === shown(previous)) {
 		// Remember it locally so the next round needs no network but Steam.
 		fs.writeFileSync(CACHE, JSON.stringify(status, null, '\t') + '\n');
 		say(`${label} - unchanged`);
 		return;
 	}
 	publish(status);
+	published = true;
 	say(`${label} - published`);
 }
 
